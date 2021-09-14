@@ -1,7 +1,0 @@
-MonitorProtonToDB module
-========================
-
-.. automodule:: MonitorProtonToDB
-    :members:
-    :undoc-members:
-    :show-inheritance:
