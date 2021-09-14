@@ -1,0 +1,54 @@
+Instance.DataAggregation.DFProcessFuncs package
+===============================================
+
+Submodules
+----------
+
+Instance.DataAggregation.DFProcessFuncs.DetectorTotalCount module
+-----------------------------------------------------------------
+
+.. automodule:: Instance.DataAggregation.DFProcessFuncs.DetectorTotalCount
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.DataAggregation.DFProcessFuncs.FRPVs module
+----------------------------------------------------
+
+.. automodule:: Instance.DataAggregation.DFProcessFuncs.FRPVs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay module
+-------------------------------------------------------------------
+
+.. automodule:: Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.DataAggregation.DFProcessFuncs.MonitorProtonToDB module
+----------------------------------------------------------------
+
+.. automodule:: Instance.DataAggregation.DFProcessFuncs.MonitorProtonToDB
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.DataAggregation.DFProcessFuncs.SRPVs module
+----------------------------------------------------
+
+.. automodule:: Instance.DataAggregation.DFProcessFuncs.SRPVs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: Instance.DataAggregation.DFProcessFuncs
+    :members:
+    :undoc-members:
+    :show-inheritance:

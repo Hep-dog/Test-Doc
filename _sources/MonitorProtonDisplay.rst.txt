@@ -1,0 +1,7 @@
+MonitorProtonDisplay module
+===========================
+
+.. automodule:: MonitorProtonDisplay
+    :members:
+    :undoc-members:
+    :show-inheritance:

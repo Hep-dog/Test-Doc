@@ -1,0 +1,169 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>main &#8212; Kafka-DataProcess-Package 1.0 文档</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">模块代码</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>main 源代码</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># -*- coding:utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">Core.worker</span> <span class="k">import</span> <span class="n">Run</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Lock</span><span class="p">,</span> <span class="n">Value</span><span class="p">,</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Queue</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">Core.runCtrl</span> <span class="k">import</span> <span class="n">parseRunParas</span><span class="p">,</span> <span class="n">sigint_handle</span><span class="p">,</span> <span class="n">processAsyner</span><span class="p">,</span> <span class="n">initDataBusDict</span>
+<span class="kn">from</span> <span class="nn">Core.aggregationFuncs</span> <span class="k">import</span> <span class="n">procAggregation</span><span class="p">,</span> <span class="n">procAggredDataProcess</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Executive function of the Kafka-DataProcess-Package</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../main.html#main.main">[文档]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Topics related parameters initialization from the input JSON file</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        topic parameters dictionary:</span>
+<span class="sd">        {</span>
+<span class="sd">            TopicName       : xxx,    --&gt; name to topic</span>
+<span class="sd">            BrokerIP        : xxx:xx, --&gt; IP and Port</span>
+<span class="sd">            Group_ID        : xxx,    --&gt; consumer group_id</span>
+<span class="sd">            Detectorcode    : 201010, --&gt; detector code for analysis</span>
+<span class="sd">            DataType        : Event,  --&gt; one of &quot;EventData&quot;, &quot;MetaData&quot; and &quot;RawData&quot;</span>
+<span class="sd">            MainApp         : xxx,    --&gt; name of the main application ( only one )</span>
+<span class="sd">            Apps            : dict for multi applications</span>
+<span class="sd">                {</span>
+<span class="sd">                    Normal  : normal apps list,</span>
+<span class="sd">                    Aggre   : aggregation apps list,</span>
+<span class="sd">                }</span>
+<span class="sd">            OtherApps       : xxx,xxx --&gt; name of other applications</span>
+<span class="sd">        }</span>
+
+<span class="sd">        applications parameters dictionary</span>
+<span class="sd">        { &quot;Name&quot; : { &quot;ModuleName&quot;: xxx, &quot;ClassName&quot;: xxx } }</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">topicsParasList</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">consumerParasDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">consuDataPipeDict</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;outDataPipeDict&quot;</span><span class="p">:{}</span> <span class="p">}</span>
+    <span class="n">aggreDataPipeDict</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;inDataPipeDict&quot;</span><span class="p">:{},</span> <span class="s2">&quot;outDataPipeDict&quot;</span><span class="p">:{}</span> <span class="p">}</span>
+    <span class="n">analyDataPipeDict</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;inDataPipeDict&quot;</span><span class="p">:{},</span> <span class="s2">&quot;dfDealFuncDict&quot;</span> <span class="p">:{}</span> <span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">topicJson</span><span class="p">,</span> <span class="n">consumerJson</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">topicsParasDict</span><span class="p">,</span> <span class="n">consumerParasDict</span> <span class="o">=</span> <span class="n">parseRunParas</span><span class="p">(</span><span class="n">topicJson</span><span class="p">),</span> <span class="n">parseRunParas</span><span class="p">(</span><span class="n">consumerJson</span><span class="p">)</span>
+        <span class="n">topicsParasList</span><span class="p">,</span> <span class="n">appsParasDict</span> <span class="o">=</span> <span class="n">topicsParasDict</span><span class="p">[</span><span class="s1">&#39;Topics&#39;</span><span class="p">],</span> <span class="n">topicsParasDict</span><span class="p">[</span><span class="s1">&#39;Apps&#39;</span><span class="p">]</span>
+        <span class="n">initDataBusDict</span><span class="p">(</span> <span class="n">topicsParasList</span><span class="p">,</span> <span class="n">appsParasDict</span><span class="p">,</span> <span class="n">consuDataPipeDict</span><span class="p">,</span> <span class="n">aggreDataPipeDict</span><span class="p">,</span> <span class="n">analyDataPipeDict</span> <span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[41mError: failed in get the topic and consumer parameters from json files!</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[41mUsage: python3 main.py topicConfig.json consumerConfig.json</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">glbCtrlDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+    <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;lock&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+    <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;queue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+    <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;asynCNT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;progressCNT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">procsList</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+    <span class="k">for</span> <span class="n">eachTopicParasDict</span> <span class="ow">in</span> <span class="n">topicsParasList</span><span class="p">:</span>
+        <span class="n">topicName</span> <span class="o">=</span> <span class="n">eachTopicParasDict</span><span class="p">[</span><span class="s2">&quot;TopicName&quot;</span><span class="p">]</span>
+        <span class="c1">#singleTopicAppsList = sum( list(eachTopicParasDict[&#39;Apps&#39;].values()), [] )</span>
+        <span class="n">procsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Run</span><span class="p">(</span>  <span class="n">eachTopicParasDict</span><span class="p">,</span> <span class="n">consumerParasDict</span><span class="p">,</span> <span class="n">glbCtrlDict</span><span class="p">,</span> <span class="n">appsParasDict</span><span class="p">,</span> <span class="n">consuDataPipeDict</span><span class="p">[</span><span class="s2">&quot;outDataPipeDict&quot;</span><span class="p">][</span><span class="n">topicName</span><span class="p">],)</span>
+                        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">aggreName</span> <span class="ow">in</span> <span class="n">aggreDataPipeDict</span><span class="p">[</span><span class="s2">&quot;inDataPipeDict&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">procsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Process</span><span class="p">(</span> <span class="n">target</span><span class="o">=</span><span class="n">procAggregation</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span> <span class="n">aggreDataPipeDict</span><span class="p">[</span><span class="s2">&quot;inDataPipeDict&quot;</span><span class="p">][</span><span class="n">aggreName</span><span class="p">],</span> <span class="n">aggreDataPipeDict</span><span class="p">[</span><span class="s2">&quot;outDataPipeDict&quot;</span><span class="p">][</span><span class="n">aggreName</span><span class="p">],</span> <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;queue&#39;</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="c1">#procsList.append( Process( target=procAggredDataProcess,  args=( analyDataPipeDict[&quot;inDataPipeDict&quot;][aggreName],  analyDataPipeDict[&quot;dfDealFuncDict&quot;][aggreName], glbCtrlDict[&#39;queue&#39;] ) ) )</span>
+        <span class="n">procsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Process</span><span class="p">(</span> <span class="n">target</span><span class="o">=</span><span class="n">procAggredDataProcess</span><span class="p">,</span>  <span class="n">args</span><span class="o">=</span><span class="p">(</span> <span class="n">analyDataPipeDict</span><span class="p">[</span><span class="s2">&quot;inDataPipeDict&quot;</span><span class="p">][</span><span class="n">aggreName</span><span class="p">],</span>  <span class="n">appsParasDict</span><span class="p">[</span><span class="n">aggreName</span><span class="p">],</span> <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;queue&#39;</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># Create process for other processes controlling</span>
+    <span class="n">pCtl</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Controller&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">processAsyner</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">topicsParasList</span><span class="p">),</span> <span class="n">glbCtrlDict</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">procsList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">pCtl</span> <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="n">procsList</span><span class="p">:</span>
+        <span class="n">proc</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">proc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="n">procsList</span><span class="p">:</span>
+        <span class="n">proc</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[42mINFO: Exiting the main process </span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >模块代码</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2021, jiyizi.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5 创建。
+    </div>
+  </body>
+</html>

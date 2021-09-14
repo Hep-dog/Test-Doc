@@ -1,0 +1,17 @@
+fbs.Data package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+
+    fbs.Data.Detector
+
+Module contents
+---------------
+
+.. automodule:: fbs.Data
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,54 @@
+Instance.OnlineMonitor package
+==============================
+
+Submodules
+----------
+
+Instance.OnlineMonitor.ChopperIDMonitor module
+----------------------------------------------
+
+.. automodule:: Instance.OnlineMonitor.ChopperIDMonitor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.OnlineMonitor.DetectorEventDataMonitor module
+------------------------------------------------------
+
+.. automodule:: Instance.OnlineMonitor.DetectorEventDataMonitor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.OnlineMonitor.EventDataROOTDisplay module
+--------------------------------------------------
+
+.. automodule:: Instance.OnlineMonitor.EventDataROOTDisplay
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.OnlineMonitor.MonitorMetaDataMonitor module
+----------------------------------------------------
+
+.. automodule:: Instance.OnlineMonitor.MonitorMetaDataMonitor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance.OnlineMonitor.PulseIDMonitor module
+--------------------------------------------
+
+.. automodule:: Instance.OnlineMonitor.PulseIDMonitor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: Instance.OnlineMonitor
+    :members:
+    :undoc-members:
+    :show-inheritance:

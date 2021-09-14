@@ -1,0 +1,271 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>OnlineMonitor.EventDataROOTDisplay &#8212; Kafka-DataProcess-Package 1.0 文档</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">模块代码</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>OnlineMonitor.EventDataROOTDisplay 源代码</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">ROOT</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">fbs.Data.Detector</span> <span class="k">import</span> <span class="n">EventData</span>
+<span class="kn">from</span> <span class="nn">Core.templateMsgProcess</span> <span class="k">import</span> <span class="n">MsgProcess</span>
+
+<div class="viewcode-block" id="EventDataROOTDisplay"><a class="viewcode-back" href="../../OnlineMonitor.html#OnlineMonitor.EventDataROOTDisplay.EventDataROOTDisplay">[文档]</a><span class="k">class</span> <span class="nc">EventDataROOTDisplay</span><span class="p">(</span><span class="n">MsgProcess</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inherited from the template data process class &quot;MsgProcess&quot;.\n</span>
+<span class="sd">        This class is used to display the CSNS EventData with CERN root histogram format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appName</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">appName</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span>      <span class="o">=</span> <span class="mi">1500</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span>   <span class="o">=</span> <span class="mi">0</span> <span class="c1"># 1 for He3, 2 for Monitor, 3 for Scin,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="o">=</span> <span class="mi">0</span> <span class="c1"># He3: 0 for long tube and 1 for short, Scin: 0 and 1 are same,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span>     <span class="o">=</span> <span class="p">(</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">60</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="mi">32</span><span class="p">)</span> <span class="p">)</span> <span class="c1"># long tube: 100*8, short tube: 60*8</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tofFactor</span>      <span class="o">=</span> <span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span> <span class="p">)</span> <span class="c1"># 1 for He3 and Monitor, 8 for Scin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tofUnit</span>        <span class="o">=</span> <span class="p">(</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1000000</span> <span class="p">)</span> <span class="c1"># ms for He3 and Monitor, ns for Scin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span>       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span>       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hbatchTof</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">htotalTof</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPixel</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">htotalPixel</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hDelPulseID</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hCounting</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prePulseID</span>     <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MPI_ENCODE_TAIL</span><span class="o">=</span> <span class="mi">10000</span> <span class="c1"># valid digital for MPI detector pixel number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tofBins</span>        <span class="o">=</span> <span class="mi">400</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixelBinFactor</span> <span class="o">=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="EventDataROOTDisplay.setHistTitle"><a class="viewcode-back" href="../../OnlineMonitor.html#OnlineMonitor.EventDataROOTDisplay.EventDataROOTDisplay.setHistTitle">[文档]</a>    <span class="k">def</span> <span class="nf">setHistTitle</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">ta</span><span class="p">,</span> <span class="n">tb</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Setting the histograms title</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">GetYaxis</span><span class="p">()</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span> <span class="n">ta</span> <span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">GetXaxis</span><span class="p">()</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span> <span class="n">tb</span> <span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">GetYaxis</span><span class="p">()</span><span class="o">.</span><span class="n">CenterTitle</span><span class="p">()</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">GetXaxis</span><span class="p">()</span><span class="o">.</span><span class="n">CenterTitle</span><span class="p">()</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">GetXaxis</span><span class="p">()</span><span class="o">.</span><span class="n">SetTitleSize</span><span class="p">(</span><span class="mf">0.03</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">GetYaxis</span><span class="p">()</span><span class="o">.</span><span class="n">SetTitleSize</span><span class="p">(</span><span class="mf">0.03</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventDataROOTDisplay.getPixelX"><a class="viewcode-back" href="../../OnlineMonitor.html#OnlineMonitor.EventDataROOTDisplay.EventDataROOTDisplay.getPixelX">[文档]</a>    <span class="k">def</span> <span class="nf">getPixelX</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pixel</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Transferring the 1D digit pixel data to 2D detector pixel.\n</span>
+<span class="sd">            i.e. 1-800 (long 3He tube) should be (x,y): (1-100, 0-7).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">pixel</span><span class="o">%</span><span class="mi">100</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">100</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="EventDataROOTDisplay.initialize"><a class="viewcode-back" href="../../OnlineMonitor.html#OnlineMonitor.EventDataROOTDisplay.EventDataROOTDisplay.initialize">[文档]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topicParasDict</span><span class="p">):</span>
+        <span class="c1"># Initializing the Detector type and histograms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDetectorType</span><span class="p">(</span> <span class="n">topicParasDict</span><span class="p">[</span><span class="s2">&quot;TopicName&quot;</span><span class="p">],</span> <span class="n">topicParasDict</span><span class="p">[</span><span class="s2">&quot;DetectorCode&quot;</span><span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initCanvasHists</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EventDataROOTDisplay.setDetectorType"><a class="viewcode-back" href="../../OnlineMonitor.html#OnlineMonitor.EventDataROOTDisplay.EventDataROOTDisplay.setDetectorType">[文档]</a>    <span class="k">def</span> <span class="nf">setDetectorType</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">topicName</span><span class="p">,</span> <span class="n">detectorTypeCode</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Getting the detector type with input detectorTypeCode, which is used to</span>
+<span class="sd">            decode the pixel data of EventData</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">detectorTypeCode</span><span class="p">)</span><span class="o">/</span><span class="mi">100000</span><span class="o">&lt;</span><span class="mi">0</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">detectorTypeCode</span><span class="p">)</span><span class="o">/</span><span class="mi">100000</span><span class="o">&gt;</span><span class="mi">10</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[41mERROR: Topic: </span><span class="si">%s</span><span class="s2"> input Detector Type Code, exist the program!</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="o">%</span> <span class="n">topicName</span> <span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">detectorTypeCode</span><span class="p">)</span><span class="o">/</span><span class="mi">100000</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">detectorTypeCode</span><span class="p">)</span><span class="o">%</span><span class="mi">10</span><span class="p">)</span> <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[42mINFO: Topic: </span><span class="si">%s</span><span class="s2"> Detector type: </span><span class="si">%s</span><span class="s2">, subdetectorType: </span><span class="si">%s</span><span class="s2">, pixel Range: </span><span class="si">%s</span><span class="se">\033</span><span class="s2">[0m&quot;</span> \
+            <span class="o">%</span> <span class="p">(</span> <span class="n">topicName</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EventDataROOTDisplay.initCanvasHists"><a class="viewcode-back" href="../../OnlineMonitor.html#OnlineMonitor.EventDataROOTDisplay.EventDataROOTDisplay.initCanvasHists">[文档]</a>    <span class="k">def</span> <span class="nf">initCanvasHists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Initializing the ROOT histogram</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span> <span class="s2">&quot;canvas1D&quot;</span><span class="p">,</span> <span class="s2">&quot;Canvas 1D&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">800</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span> <span class="s2">&quot;canvas2D&quot;</span><span class="p">,</span> <span class="s2">&quot;Canvas 2D&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">800</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span> <span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">Divide</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hbatchTof</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH1F</span><span class="p">(</span> <span class="s2">&quot;hbatchTof&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tofBins</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">40</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">htotalTof</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH1F</span><span class="p">(</span> <span class="s2">&quot;htotalTof&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tofBins</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">40</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hDelPulseID</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH1F</span><span class="p">(</span> <span class="s2">&quot;hDelPulseID&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hCounting</span>   <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH1F</span><span class="p">(</span> <span class="s2">&quot;Counting&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span> <span class="p">)</span>
+
+        <span class="c1">#self.hDelPulseID = ROOT.TH2F( &quot;hDelPulseID&quot;, &quot;&quot;, 150, 0, self.batchSize, 10, -5, 5 )</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH1F</span><span class="p">(</span> <span class="s2">&quot;hbatchPos&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">],</span> \
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">]</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">htotalPos</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH1F</span><span class="p">(</span> <span class="s2">&quot;htotalPos&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">],</span> \
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">]</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH2F</span><span class="p">(</span> <span class="s2">&quot;hbatchPos&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelBinFactor</span><span class="p">,</span> \
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">],</span> \
+                    <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">htotalPos</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TH2F</span><span class="p">(</span> <span class="s2">&quot;htotalPos&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixelBinFactor</span><span class="p">,</span> \
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pixelRange</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">subdetectorType</span><span class="p">],</span> \
+                    <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="c1"># SetTitle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHistTitle</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">htotalTof</span><span class="p">,</span> <span class="s2">&quot;Accumulated Events&quot;</span><span class="p">,</span> <span class="s2">&quot;Tof (ms)&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHistTitle</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">hbatchTof</span><span class="p">,</span> <span class="s2">&quot;Current Events&quot;</span>    <span class="p">,</span> <span class="s2">&quot;Tof (ms)&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHistTitle</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">hDelPulseID</span><span class="p">,</span> <span class="s2">&quot;#</span><span class="si">{Delta}</span><span class="s2">Pulse ID&quot;</span><span class="p">,</span> <span class="s2">&quot;last &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; pulses&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHistTitle</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">hCounting</span> <span class="p">,</span> <span class="s2">&quot;Counting Rate&quot;</span><span class="p">,</span> <span class="s2">&quot;last &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; pulses&quot;</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHistTitle</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span> <span class="p">,</span> <span class="s2">&quot;Current Pixel X ranges&quot;</span><span class="p">,</span> <span class="s2">&quot;Current Pixel Y ranges&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHistTitle</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">htotalPos</span> <span class="p">,</span> <span class="s2">&quot;Accumulated Pixel X ranges&quot;</span><span class="p">,</span> <span class="s2">&quot;Accumulated Pixel Y ranges&quot;</span><span class="p">)</span></div>
+
+    <span class="c1">#TODO</span>
+<div class="viewcode-block" id="EventDataROOTDisplay.run"><a class="viewcode-back" href="../../OnlineMonitor.html#OnlineMonitor.EventDataROOTDisplay.EventDataROOTDisplay.run">[文档]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">eventCounter</span><span class="p">,</span> <span class="n">detectorTypeCode</span><span class="p">,</span> <span class="n">dataType</span><span class="p">,</span> <span class="n">dataPipeDict</span> <span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">EventData</span><span class="o">.</span><span class="n">EventData</span><span class="o">.</span><span class="n">GetRootAsEventData</span><span class="p">(</span> <span class="n">buf</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span>
+        <span class="n">ID</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PulseId</span><span class="p">()</span>
+        <span class="n">TofArray</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">TofAsNumpy</span><span class="p">()</span>
+        <span class="n">PosArray</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">PosAsNumpy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">eventCounter</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prePulseID</span> <span class="o">=</span> <span class="n">ID</span>
+        <span class="c1">#print( &quot;========================= Pre Pulse ID is: %d, %d  ==================== &quot; % ( self.prePulseID, ID-self.prePulseID) )</span>
+        <span class="k">if</span> <span class="n">eventCounter</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hDelPulseID</span><span class="o">.</span><span class="n">SetBinContent</span><span class="p">(</span> <span class="n">eventCounter</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">ID</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">prePulseID</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hCounting</span><span class="o">.</span><span class="n">SetBinContent</span><span class="p">(</span> <span class="n">eventCounter</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">TofLength</span><span class="p">()</span> <span class="p">)</span>
+            <span class="c1">#self.hDelPulseID.Fill( int(eventCounter%self.batchSize), int(ID-self.prePulseID) )</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hDelPulseID</span><span class="o">.</span><span class="n">SetBinContent</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">ID</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">prePulseID</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hCounting</span><span class="o">.</span><span class="n">SetBinContent</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">TofLength</span><span class="p">()</span> <span class="p">)</span>
+            <span class="c1">#self.hDelPulseID.Fill( int(self.batchSize), int(ID-self.prePulseID) )</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TofArray</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">htotalTof</span><span class="o">.</span><span class="n">Fill</span><span class="p">(</span> <span class="n">TofArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tofFactor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">]</span> \
+                                                        <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tofUnit</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">]</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hbatchTof</span><span class="o">.</span><span class="n">Fill</span><span class="p">(</span> <span class="n">TofArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tofFactor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">]</span> \
+                                                        <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tofUnit</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span><span class="p">]</span> <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">htotalPos</span><span class="o">.</span><span class="n">Fill</span><span class="p">(</span> <span class="n">PosArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span><span class="o">.</span><span class="n">Fill</span><span class="p">(</span> <span class="n">PosArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">transPixel</span> <span class="o">=</span> <span class="n">PosArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">MPI_ENCODE_TAIL</span>
+                <span class="n">curX</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPixelX</span><span class="p">(</span> <span class="n">transPixel</span> <span class="p">)</span>
+                <span class="n">curY</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="n">transPixel</span><span class="o">/</span><span class="mi">100</span> <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span><span class="o">.</span><span class="n">Fill</span><span class="p">(</span> <span class="n">curX</span><span class="p">,</span> <span class="n">curY</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">htotalPos</span><span class="o">.</span><span class="n">Fill</span><span class="p">(</span> <span class="n">curX</span><span class="p">,</span> <span class="n">curY</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="n">eventCounter</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">batchSize</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">htotalTof</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hbatchTof</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hDelPulseID</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hCounting</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectorType</span> <span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">htotalPos</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="s2">&quot;colz&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">cd</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">htotalPos</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="s2">&quot;colz&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span><span class="o">.</span><span class="n">Modified</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas1D</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">Modified</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas2D</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">hbatchTof</span><span class="o">.</span><span class="n">Reset</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hbatchPos</span><span class="o">.</span><span class="n">Reset</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prePulseID</span> <span class="o">=</span> <span class="n">ID</span>
+
+        <span class="k">if</span> <span class="n">eventCounter</span><span class="o">%</span><span class="mi">10000</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot; &quot;</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Topic: </span><span class="si">%45s</span><span class="s2">,</span><span class="se">\t</span><span class="s2"> ID: </span><span class="si">%10d</span><span class="s2">,</span><span class="se">\t</span><span class="s2"> Offset: </span><span class="si">%8d</span><span class="s2"> &quot;</span><span class="o">%</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">topic</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >模块代码</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2021, jiyizi.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5 创建。
+    </div>
+  </body>
+</html>
