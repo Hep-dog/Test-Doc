@@ -1,7 +1,0 @@
-AggreExample module
-===================
-
-.. automodule:: AggreExample
-    :members:
-    :undoc-members:
-    :show-inheritance:

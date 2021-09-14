@@ -1,7 +1,0 @@
-FRPVs module
-============
-
-.. automodule:: FRPVs
-    :members:
-    :undoc-members:
-    :show-inheritance:

@@ -1,7 +1,0 @@
-FRPV\_ID\_Count module
-======================
-
-.. automodule:: FRPV_ID_Count
-    :members:
-    :undoc-members:
-    :show-inheritance:

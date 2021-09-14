@@ -1,7 +1,0 @@
-MonitorCNT\_FR module
-=====================
-
-.. automodule:: MonitorCNT_FR
-    :members:
-    :undoc-members:
-    :show-inheritance:
