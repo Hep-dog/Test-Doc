@@ -1,0 +1,324 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Instance.DataStorage package &#8212; Kafka-DataProcess-Package 1.0 文档</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="instance-datastorage-package">
+<h1>Instance.DataStorage package<a class="headerlink" href="#instance-datastorage-package" title="永久链接至标题">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="永久链接至标题">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Instance.DataStorage.ScanDB.html">Instance.DataStorage.ScanDB package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Instance.DataStorage.ScanDB.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Instance.DataStorage.ScanDB.html#module-Instance.DataStorage.ScanDB.CreateIDMonitor">Instance.DataStorage.ScanDB.CreateIDMonitor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Instance.DataStorage.ScanDB.html#module-Instance.DataStorage.ScanDB.scanDB">Instance.DataStorage.ScanDB.scanDB module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Instance.DataStorage.ScanDB.html#module-Instance.DataStorage.ScanDB">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="module-Instance.DataStorage.DecodeDIYRawData">
+<span id="instance-datastorage-decodediyrawdata-module"></span><h2>Instance.DataStorage.DecodeDIYRawData module<a class="headerlink" href="#module-Instance.DataStorage.DecodeDIYRawData" title="永久链接至标题">¶</a></h2>
+<dl class="function">
+<dt id="Instance.DataStorage.DecodeDIYRawData.decodeMetaData">
+<code class="descclassname">Instance.DataStorage.DecodeDIYRawData.</code><code class="descname">decodeMetaData</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/DecodeDIYRawData.html#decodeMetaData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.DecodeDIYRawData.decodeMetaData" title="永久链接至目标">¶</a></dt>
+<dd><p>This function is used to decode the DIY binary meta data.</p>
+<dl class="docutils">
+<dt>Note: There is an addition 4B int data head of each Pulse, which is the event</dt>
+<dd>length of these pulse.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Instance.DataStorage.DecodeDIYRawData.main">
+<code class="descclassname">Instance.DataStorage.DecodeDIYRawData.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/DecodeDIYRawData.html#main"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.DecodeDIYRawData.main" title="永久链接至目标">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-Instance.DataStorage.SaveDIYRawData">
+<span id="instance-datastorage-savediyrawdata-module"></span><h2>Instance.DataStorage.SaveDIYRawData module<a class="headerlink" href="#module-Instance.DataStorage.SaveDIYRawData" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Instance.DataStorage.SaveDIYRawData.SaveDIYRawData">
+<em class="property">class </em><code class="descclassname">Instance.DataStorage.SaveDIYRawData.</code><code class="descname">SaveDIYRawData</code><span class="sig-paren">(</span><em>appName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveDIYRawData.html#SaveDIYRawData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveDIYRawData.SaveDIYRawData" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<a class="reference internal" href="Core.html#Core.templateMsgProcess.MsgProcess" title="Core.templateMsgProcess.MsgProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core.templateMsgProcess.MsgProcess</span></code></a></p>
+<p>Inherited from the template data process class “MsgProcess”
+This class is used to save the CSNS eventdata data, to the DIY binary format.</p>
+<p>Note: The event length( 4B size ) is taken as an additional data head every pulse data, which is
+used to for the data splitting in further binary data decoding.</p>
+<dl class="method">
+<dt id="Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.createBinFile">
+<code class="descname">createBinFile</code><span class="sig-paren">(</span><em>msg</em>, <em>ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveDIYRawData.html#SaveDIYRawData.createBinFile"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.createBinFile" title="永久链接至目标">¶</a></dt>
+<dd><p>Creating the files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><em>topicParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveDIYRawData.html#SaveDIYRawData.finalize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.finalize" title="永久链接至目标">¶</a></dt>
+<dd><p>Closing the files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveDIYRawData.html#SaveDIYRawData.run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.run" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract user Kafka data processing function, user should override it for his analysis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.saveBinData">
+<code class="descname">saveBinData</code><span class="sig-paren">(</span><em>buf</em>, <em>cnt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveDIYRawData.html#SaveDIYRawData.saveBinData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveDIYRawData.SaveDIYRawData.saveBinData" title="永久链接至目标">¶</a></dt>
+<dd><p>Perform the data storage.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Instance.DataStorage.SaveEventData">
+<span id="instance-datastorage-saveeventdata-module"></span><h2>Instance.DataStorage.SaveEventData module<a class="headerlink" href="#module-Instance.DataStorage.SaveEventData" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Instance.DataStorage.SaveEventData.SaveEventData">
+<em class="property">class </em><code class="descclassname">Instance.DataStorage.SaveEventData.</code><code class="descname">SaveEventData</code><span class="sig-paren">(</span><em>appName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveEventData.html#SaveEventData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveEventData.SaveEventData" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<a class="reference internal" href="Core.html#Core.templateMsgProcess.MsgProcess" title="Core.templateMsgProcess.MsgProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core.templateMsgProcess.MsgProcess</span></code></a></p>
+<p>Inherited from the template data process class “MsgProcess”
+This class is used to save CSNS EventData to HDF5 formate</p>
+<dl class="method">
+<dt id="Instance.DataStorage.SaveEventData.SaveEventData.createH5File">
+<code class="descname">createH5File</code><span class="sig-paren">(</span><em>msg</em>, <em>pulseInfo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveEventData.html#SaveEventData.createH5File"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveEventData.SaveEventData.createH5File" title="永久链接至目标">¶</a></dt>
+<dd><p>Creating the files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveEventData.SaveEventData.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveEventData.html#SaveEventData.run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveEventData.SaveEventData.run" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract user Kafka data processing function, user should override it for his analysis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveEventData.SaveEventData.saveToH5File">
+<code class="descname">saveToH5File</code><span class="sig-paren">(</span><em>pulseInfo</em>, <em>tofVec</em>, <em>pixelVec</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveEventData.html#SaveEventData.saveToH5File"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveEventData.SaveEventData.saveToH5File" title="永久链接至目标">¶</a></dt>
+<dd><p>Performing the data storage.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Instance.DataStorage.SaveRawData">
+<span id="instance-datastorage-saverawdata-module"></span><h2>Instance.DataStorage.SaveRawData module<a class="headerlink" href="#module-Instance.DataStorage.SaveRawData" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Instance.DataStorage.SaveRawData.SaveRawData">
+<em class="property">class </em><code class="descclassname">Instance.DataStorage.SaveRawData.</code><code class="descname">SaveRawData</code><span class="sig-paren">(</span><em>appName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveRawData.html#SaveRawData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveRawData.SaveRawData" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<a class="reference internal" href="Core.html#Core.templateMsgProcess.MsgProcess" title="Core.templateMsgProcess.MsgProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core.templateMsgProcess.MsgProcess</span></code></a></p>
+<p>Inherited from the template data process class “MsgProcess”
+This class is used to save the CSNS raw data, to the original binary format.</p>
+<p>Note: the corresponding binary data should be decoded with the data structure from
+electronics.</p>
+<dl class="method">
+<dt id="Instance.DataStorage.SaveRawData.SaveRawData.createBinFile">
+<code class="descname">createBinFile</code><span class="sig-paren">(</span><em>msg</em>, <em>ID</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveRawData.html#SaveRawData.createBinFile"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveRawData.SaveRawData.createBinFile" title="永久链接至目标">¶</a></dt>
+<dd><p>Creating the files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveRawData.SaveRawData.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><em>topicParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveRawData.html#SaveRawData.finalize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveRawData.SaveRawData.finalize" title="永久链接至目标">¶</a></dt>
+<dd><p>Closing the files</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveRawData.SaveRawData.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveRawData.html#SaveRawData.run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveRawData.SaveRawData.run" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract user Kafka data processing function, user should override it for his analysis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveRawData.SaveRawData.saveBinData">
+<code class="descname">saveBinData</code><span class="sig-paren">(</span><em>RawVec</em>, <em>cnt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveRawData.html#SaveRawData.saveBinData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveRawData.SaveRawData.saveBinData" title="永久链接至目标">¶</a></dt>
+<dd><p>Do the data storage.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Instance.DataStorage.SaveToROOT">
+<span id="instance-datastorage-savetoroot-module"></span><h2>Instance.DataStorage.SaveToROOT module<a class="headerlink" href="#module-Instance.DataStorage.SaveToROOT" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Instance.DataStorage.SaveToROOT.SaveToROOT">
+<em class="property">class </em><code class="descclassname">Instance.DataStorage.SaveToROOT.</code><code class="descname">SaveToROOT</code><span class="sig-paren">(</span><em>appName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveToROOT.html#SaveToROOT"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveToROOT.SaveToROOT" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<a class="reference internal" href="Core.html#Core.templateMsgProcess.MsgProcess" title="Core.templateMsgProcess.MsgProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core.templateMsgProcess.MsgProcess</span></code></a></p>
+<p>Inherited from the template data process class “MsgProcess”
+This class is used to save CSNS EventData to CERN ROOT format</p>
+<dl class="method">
+<dt id="Instance.DataStorage.SaveToROOT.SaveToROOT.closeROOTFile">
+<code class="descname">closeROOTFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveToROOT.html#SaveToROOT.closeROOTFile"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveToROOT.SaveToROOT.closeROOTFile" title="永久链接至目标">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveToROOT.SaveToROOT.createROOTFile">
+<code class="descname">createROOTFile</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveToROOT.html#SaveToROOT.createROOTFile"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveToROOT.SaveToROOT.createROOTFile" title="永久链接至目标">¶</a></dt>
+<dd><p>Creating the ROOT file, tree and renaming the variables.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveToROOT.SaveToROOT.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><em>topicParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveToROOT.html#SaveToROOT.finalize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveToROOT.SaveToROOT.finalize" title="永久链接至目标">¶</a></dt>
+<dd><p>Closing the ROOT file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveToROOT.SaveToROOT.renameROOTFile">
+<code class="descname">renameROOTFile</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveToROOT.html#SaveToROOT.renameROOTFile"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveToROOT.SaveToROOT.renameROOTFile" title="永久链接至目标">¶</a></dt>
+<dd><p>Renaming the finished ROOT file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.SaveToROOT.SaveToROOT.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/SaveToROOT.html#SaveToROOT.run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.SaveToROOT.SaveToROOT.run" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract user Kafka data processing function, user should override it for his analysis.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Instance.DataStorage.WriteToDB">
+<span id="instance-datastorage-writetodb-module"></span><h2>Instance.DataStorage.WriteToDB module<a class="headerlink" href="#module-Instance.DataStorage.WriteToDB" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Instance.DataStorage.WriteToDB.WriteToDB">
+<em class="property">class </em><code class="descclassname">Instance.DataStorage.WriteToDB.</code><code class="descname">WriteToDB</code><span class="sig-paren">(</span><em>appName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/WriteToDB.html#WriteToDB"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.WriteToDB.WriteToDB" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<a class="reference internal" href="Core.html#Core.templateMsgProcess.MsgProcess" title="Core.templateMsgProcess.MsgProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">Core.templateMsgProcess.MsgProcess</span></code></a></p>
+<p>Inherited from the template data process class “MsgProcess”
+This class is get the pulse ID’s continuity status, and write it to mysql database.</p>
+<dl class="method">
+<dt id="Instance.DataStorage.WriteToDB.WriteToDB.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><em>topicParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/WriteToDB.html#WriteToDB.finalize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.WriteToDB.WriteToDB.finalize" title="永久链接至目标">¶</a></dt>
+<dd><p>Closing the database</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.WriteToDB.WriteToDB.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>topicParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/WriteToDB.html#WriteToDB.initialize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.WriteToDB.WriteToDB.initialize" title="永久链接至目标">¶</a></dt>
+<dd><p>Creating the mysql database connection and command, users have to fulfill the mysql parameters:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>user</li>
+<li>password</li>
+<li>IP address</li>
+<li>Name of database</li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="Instance.DataStorage.WriteToDB.WriteToDB.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Instance/DataStorage/WriteToDB.html#WriteToDB.run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Instance.DataStorage.WriteToDB.WriteToDB.run" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract user Kafka data processing function, user should override it for his analysis.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Instance.DataStorage">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Instance.DataStorage" title="永久链接至标题">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Instance.DataStorage package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-Instance.DataStorage.DecodeDIYRawData">Instance.DataStorage.DecodeDIYRawData module</a></li>
+<li><a class="reference internal" href="#module-Instance.DataStorage.SaveDIYRawData">Instance.DataStorage.SaveDIYRawData module</a></li>
+<li><a class="reference internal" href="#module-Instance.DataStorage.SaveEventData">Instance.DataStorage.SaveEventData module</a></li>
+<li><a class="reference internal" href="#module-Instance.DataStorage.SaveRawData">Instance.DataStorage.SaveRawData module</a></li>
+<li><a class="reference internal" href="#module-Instance.DataStorage.SaveToROOT">Instance.DataStorage.SaveToROOT module</a></li>
+<li><a class="reference internal" href="#module-Instance.DataStorage.WriteToDB">Instance.DataStorage.WriteToDB module</a></li>
+<li><a class="reference internal" href="#module-Instance.DataStorage">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Instance.DataStorage.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2021, jiyizi.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5 创建。
+    </div>
+  </body>
+</html>

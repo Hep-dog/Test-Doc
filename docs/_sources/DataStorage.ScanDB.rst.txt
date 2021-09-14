@@ -1,0 +1,30 @@
+DataStorage.ScanDB package
+==========================
+
+Submodules
+----------
+
+DataStorage.ScanDB.CreateIDMonitor module
+-----------------------------------------
+
+.. automodule:: DataStorage.ScanDB.CreateIDMonitor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DataStorage.ScanDB.scanDB module
+--------------------------------
+
+.. automodule:: DataStorage.ScanDB.scanDB
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: DataStorage.ScanDB
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,61 @@
+DataAggregation package
+=======================
+
+Subpackages
+-----------
+
+.. toctree::
+
+    DataAggregation.DFProcessFuncs
+
+Submodules
+----------
+
+DataAggregation.AggreExample module
+-----------------------------------
+
+.. automodule:: DataAggregation.AggreExample
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DataAggregation.AggregationBase module
+--------------------------------------
+
+.. automodule:: DataAggregation.AggregationBase
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DataAggregation.He3AllCounts module
+-----------------------------------
+
+.. automodule:: DataAggregation.He3AllCounts
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DataAggregation.MonitorCNTvsProtonCharge module
+-----------------------------------------------
+
+.. automodule:: DataAggregation.MonitorCNTvsProtonCharge
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DataAggregation.basicFuncs module
+---------------------------------
+
+.. automodule:: DataAggregation.basicFuncs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: DataAggregation
+    :members:
+    :undoc-members:
+    :show-inheritance:
