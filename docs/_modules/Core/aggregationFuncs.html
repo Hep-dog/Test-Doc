@@ -1,0 +1,415 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Core.aggregationFuncs &#8212; Kafka-DataProcess-Package 1.0 文档</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">模块代码</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Core.aggregationFuncs 源代码</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Thread</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="k">import</span> <span class="n">Queue</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The functions below are used for data aggregation</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1"># Checking the residual data valid or not</span>
+<div class="viewcode-block" id="checkLeftData"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.checkLeftData">[文档]</a><span class="k">def</span> <span class="nf">checkLeftData</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">leftDFList</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function used to check the data in left list is far away from current pulse or not.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            msg(bytes) : current msg\n</span>
+<span class="sd">            leftDFList : the list holds the left dataframe in the last aggregation operation.</span>
+
+<span class="sd">        Return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#TODO</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="n">EventData</span><span class="o">.</span><span class="n">EventData</span><span class="o">.</span><span class="n">GetRootAsEventData</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">PulseId</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">leftDFList</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">leftDFList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">):</span>
+            <span class="n">tempID</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">leftDFList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ID</span><span class="o">-</span><span class="n">tempID</span><span class="p">)</span><span class="o">&gt;</span><span class="n">G_DISTDROP</span><span class="p">:</span>
+                <span class="n">leftDFList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">leftDFList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="msgRecvThread"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.msgRecvThread">[文档]</a><span class="k">def</span> <span class="nf">msgRecvThread</span><span class="p">(</span> <span class="n">inPipeList</span><span class="p">,</span> <span class="n">dataQueueDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function used in the thread of data aggration python process, for receiving data</span>
+<span class="sd">        from the data consuming processs with the python data pipe. And put the</span>
+<span class="sd">        received data the queue for the dataframe processing threads.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            inPipeList: input data pipe List\n</span>
+<span class="sd">            dataQueueDict : output data queue\n</span>
+<span class="sd">            runningCtrlQueue : the running control queue for this thread</span>
+<span class="sd">            globalQueue : the global running control for all process in this program</span>
+
+<span class="sd">        Return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctrlCNT</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">ctrlCNT</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">inPipeList</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inPipeList</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">inPipeList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="mf">0.001</span><span class="p">):</span>
+                <span class="n">recvMsg</span> <span class="o">=</span> <span class="n">inPipeList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">recvMsg</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="n">runningCtrlQueue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;Stop&quot;</span><span class="p">)</span>
+                    <span class="n">ctrlCNT</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">recvMsg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">dataQueueDict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span> <span class="n">recvMsg</span> <span class="p">)</span>
+                    <span class="n">recvMsg</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">globalQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="k">break</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="c1">#print( &quot; ============================ Stopping the recv thread =================== &quot; )</span>
+
+<div class="viewcode-block" id="msgAggreThread"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.msgAggreThread">[文档]</a><span class="k">def</span> <span class="nf">msgAggreThread</span><span class="p">(</span> <span class="n">outPipe</span><span class="p">,</span> <span class="n">dataQueueDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function used in the thread of data aggration python process, for processing data</span>
+<span class="sd">        in the data queue.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            outPipe : output data pipe for transfer the aggregated pandas dataframe for the further</span>
+<span class="sd">            user data process.\n</span>
+<span class="sd">            dataQueueDict : input data queue holds the data waiting for aggregation.\n</span>
+<span class="sd">            runningCtrlQueue : the running control queue for this thread</span>
+<span class="sd">            globalQueue : the global running control for all process in this program</span>
+
+<span class="sd">        Return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#start = time.process_time()</span>
+    <span class="n">dataframeList</span><span class="o">=</span> <span class="p">[]</span>
+    <span class="n">leftDFDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">eventCNT</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">mergedDF</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">signalDF</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">leftDF</span>   <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">quitCNT</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">dataQueueDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">leftDFDict</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>   <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span> <span class="n">quitCNT</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataQueueDict</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+        <span class="n">keepFlag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">dataDF</span> <span class="ow">in</span> <span class="n">dataQueueDict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">keepFlag</span> <span class="o">=</span> <span class="n">keepFlag</span><span class="o">*</span><span class="p">(</span> <span class="ow">not</span> <span class="n">dataDF</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="p">)</span>
+
+        <span class="c1"># Get data from queue</span>
+        <span class="k">if</span> <span class="n">keepFlag</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">dataDF</span> <span class="ow">in</span> <span class="n">dataQueueDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">currentDF</span> <span class="o">=</span> <span class="n">dataDF</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">leftDFDict</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">currentDF</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span> <span class="p">[</span><span class="n">currentDF</span><span class="p">,</span> <span class="n">leftDFDict</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span> <span class="p">)</span>
+                <span class="n">dataframeList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">currentDF</span><span class="p">)</span>
+
+            <span class="c1"># Adding the last data which have none values</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataframeList</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">mergedDF</span> <span class="o">=</span> <span class="n">dataframeList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">dataframeList</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mergedDF</span> <span class="o">=</span> <span class="n">dataframeList</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># Splitting the non-none and none values in merged dataframe</span>
+            <span class="k">if</span> <span class="n">mergedDF</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">signalDF</span> <span class="o">=</span> <span class="n">mergedDF</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;any&#39;</span> <span class="p">)</span>
+                <span class="n">leftDF</span>   <span class="o">=</span> <span class="n">mergedDF</span><span class="p">[</span> <span class="n">mergedDF</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="p">]</span>
+                <span class="c1">#print( signalDF )</span>
+                <span class="n">outPipe</span><span class="o">.</span><span class="n">send</span><span class="p">(</span> <span class="n">signalDF</span> <span class="p">)</span>
+                <span class="c1">#print( leftDF )</span>
+
+                <span class="c1"># Get the data with none value in this round</span>
+                <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">leftDFDict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">leftDFDict</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">leftDF</span><span class="p">[</span><span class="n">leftDF</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_frame</span><span class="p">())</span>
+
+                <span class="n">dataframeList</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Checking the residual data valid or not</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">runningCtrlQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">runningCtrlQueue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">dataDF</span> <span class="ow">in</span> <span class="n">dataQueueDict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">dataDF</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                    <span class="n">quitCNT</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">globalQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">quitCNT</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">outPipe</span><span class="o">.</span><span class="n">send</span><span class="p">(</span> <span class="s2">&quot;Stopping&quot;</span> <span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">outPipe</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[42mINFO: exiting the aggregation thread </span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="procAggregation"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.procAggregation">[文档]</a><span class="k">def</span> <span class="nf">procAggregation</span><span class="p">(</span> <span class="n">inPipeList</span><span class="p">,</span> <span class="n">outPipe</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function running in the main thread of multiple original dataframe aggregation process,</span>
+<span class="sd">        which is used to create data receiving and processing threads in this process, and initialize</span>
+<span class="sd">        the items for data receiving and aggregation.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            inPipeList (List) : input list holds data pipes, which are used for transfer all the dataframes need to be aggregated.\n</span>
+<span class="sd">            outPipe : out list holds the data pipe, which is used for transfer the aggregated dataframe.\n</span>
+<span class="sd">            globalQueue : the global running control for all process in this program.\n</span>
+
+<span class="sd">        Return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#start = time.process_time()</span>
+    <span class="c1">#tracemalloc.start(25)</span>
+    <span class="n">dataQueueDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">runningCtrlQueue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inPipeList</span><span class="p">)):</span>
+        <span class="n">dataQueueDict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+    <span class="n">recvThread</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span> <span class="n">target</span><span class="o">=</span><span class="n">msgRecvThread</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span> <span class="n">inPipeList</span><span class="p">,</span> <span class="n">dataQueueDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">aggreThread</span><span class="o">=</span> <span class="n">Thread</span><span class="p">(</span> <span class="n">target</span><span class="o">=</span><span class="n">msgAggreThread</span> <span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span> <span class="n">outPipe</span><span class="p">,</span> <span class="n">dataQueueDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">recvThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">aggreThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">recvThread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="n">aggreThread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="c1">#end=time.process_time()</span>
+    <span class="c1">#current, peak = tracemalloc.get_traced_memory()</span>
+    <span class="c1">#print( &quot; Aggregation thread time used: %s &quot; % str(end-start) )</span>
+    <span class="c1">#print(f&quot;Current memory usage {current/1e6}MB; Peak: {peak/1e6}MB&quot;)</span>
+    <span class="c1">#print( &quot; ============================ Stopping the pipe process thread =================== &quot; )</span>
+    <span class="c1">#print( &quot; Aggregation thread time used: %s &quot; % str(end-start) )</span>
+    <span class="c1">#print(f&quot;Current memory usage {current/1e6}MB; Peak: {peak/1e6}MB&quot;)</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[42mINFO: exiting the aggregation process </span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="dfRecvThread"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.dfRecvThread">[文档]</a><span class="k">def</span> <span class="nf">dfRecvThread</span><span class="p">(</span> <span class="n">inPipe</span><span class="p">,</span> <span class="n">dfQueueDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function used to receive the aggregated dataframe from the data aggregation process,</span>
+<span class="sd">        for the next user data processing algorithm, which is in the another python process.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            inPipe : data pipe used for the input aggregated dataframe results.\n</span>
+<span class="sd">            dfQueueDict : data queue used to storage the received aggregated dataframe results.\n</span>
+<span class="sd">            runningCtrlQueue : the running control queue for this thread</span>
+<span class="sd">            globalQueue : the global running control for all process in this program</span>
+
+<span class="sd">        Return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctrlCNT</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">recvDF</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">while</span> <span class="n">ctrlCNT</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">inPipe</span><span class="o">.</span><span class="n">poll</span><span class="p">(</span><span class="mf">0.01</span><span class="p">):</span>
+                <span class="n">recvDF</span> <span class="o">=</span> <span class="n">inPipe</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">recvDF</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">runningCtrlQueue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;Stop&quot;</span><span class="p">)</span>
+            <span class="n">ctrlCNT</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">recvDF</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dfQueueDict</span><span class="p">)):</span>
+                <span class="n">dfQueueDict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">recvDF</span><span class="p">)</span>
+                <span class="n">recvDF</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">globalQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">ctrlCNT</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+    <span class="c1">#print( &quot; ============================ Stopping the DataFrame recv thread =================== &quot;, recvDF )</span>
+
+<div class="viewcode-block" id="dfDealThread"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.dfDealThread">[文档]</a><span class="k">def</span> <span class="nf">dfDealThread</span><span class="p">(</span> <span class="n">dfQueue</span><span class="p">,</span> <span class="n">aggreAppParasDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function used to apply the user data processing algorithms in the aggregated dataframe,</span>
+<span class="sd">        which is in the another python process.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            dfQueue : data queue used to storage the received aggregated dataframe results.\n</span>
+<span class="sd">            aggreAppParasDict: dict holds the parameters of user dataframe processing classes,</span>
+<span class="sd">            which are auto-imported.\n</span>
+<span class="sd">            runningCtrlQueue : the running control queue for this thread.\n</span>
+<span class="sd">            globalQueue : the global running control for all process in this program.\n</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">quitCNT</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># Import user&#39;s dataframe processing functions</span>
+    <span class="c1">#aggreFuncImport( aggreAppParasDict )</span>
+    <span class="n">userDFProcessClassList</span> <span class="o">=</span> <span class="n">getDFProcessClass</span><span class="p">(</span> <span class="n">aggreAppParasDict</span> <span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="p">[</span> <span class="n">item</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">userDFProcessClassList</span> <span class="p">]</span>
+
+    <span class="k">while</span> <span class="n">quitCNT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dfQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">dfQueue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="c1">#TODO</span>
+                <span class="c1"># Using each user dataframe process method to deal with the received dataframe</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="p">[</span> <span class="n">item</span><span class="o">.</span><span class="n">processDF</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">userDFProcessClassList</span> <span class="p">]</span>
+                <span class="c1">#for eachFunc in aggreAppParasDict[&quot;DFDealFunc&quot;]:</span>
+                <span class="c1">#    funcPath = list(eachFunc.values())[0]</span>
+                <span class="c1">#    funcName = list(eachFunc.keys())[0]</span>
+                <span class="c1">#    sys.modules[funcPath].__dict__[funcName]( df )</span>
+                <span class="c1">#TODO</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="c1"># Checking the residual data valid or not</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">runningCtrlQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">quitCNT</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">globalQueue</span><span class="o">.</span><span class="n">empty</span><span class="p">()):</span>
+            <span class="n">quitCNT</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="p">[</span> <span class="n">item</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">userDFProcessClassList</span> <span class="p">]</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+    <span class="c1">#print( &quot; ============================ Stopping the DataFrame dealing thread =================== &quot; )</span>
+
+<div class="viewcode-block" id="getDFProcessClass"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.getDFProcessClass">[文档]</a><span class="k">def</span> <span class="nf">getDFProcessClass</span><span class="p">(</span> <span class="n">aggreAppParasDict</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function performs the auto-importing of user defined aggregated dataframe processing</span>
+<span class="sd">        function, by the python sys env method.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            aggreAppParasDict: dict holds the parameters of user dataframe processing classes,</span>
+
+<span class="sd">        Return: list of user dataframe processing class instances, which are used for next initialization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">temptClassList</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">aggreAppParasDict</span><span class="p">[</span><span class="s2">&quot;DFDealFunc&quot;</span><span class="p">]:</span>
+        <span class="n">classDir</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">className</span><span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">strImport</span> <span class="o">=</span> <span class="s2">&quot;from &quot;</span> <span class="o">+</span> <span class="n">classDir</span> <span class="o">+</span> <span class="s2">&quot; import &quot;</span> <span class="o">+</span> <span class="n">className</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exec</span><span class="p">(</span> <span class="n">strImport</span> <span class="p">)</span>
+            <span class="n">temptClassList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">eval</span><span class="p">(</span><span class="n">className</span><span class="p">)(</span><span class="n">className</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[41mERROR: Facing import error of app: </span><span class="si">%s</span><span class="s2"> with user&#39;s dataframe process method: </span><span class="si">%s</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">aggreAppParasDict</span><span class="p">[</span><span class="s2">&quot;ClassName&quot;</span><span class="p">],</span> <span class="n">className</span><span class="p">)</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[41mERROR: Facing import error of app: </span><span class="si">%s</span><span class="s2"> with user&#39;s dataframe process method: </span><span class="si">%s</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">aggreAppParasDict</span><span class="p">[</span><span class="s2">&quot;ClassName&quot;</span><span class="p">],</span> <span class="n">className</span><span class="p">)</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[41mERROR: Facing import error of app: </span><span class="si">%s</span><span class="s2"> with user&#39;s dataframe process method: </span><span class="si">%s</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">aggreAppParasDict</span><span class="p">[</span><span class="s2">&quot;ClassName&quot;</span><span class="p">],</span> <span class="n">className</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">temptClassList</span></div>
+
+<div class="viewcode-block" id="aggreFuncImport"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.aggreFuncImport">[文档]</a><span class="k">def</span> <span class="nf">aggreFuncImport</span><span class="p">(</span> <span class="n">aggreAppParasDict</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is the old method to auto-import user&#39;s dataframe processing class</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            aggreAppParasDict: dict holds the parameters of user dataframe processing classes,</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="p">)</span>
+    <span class="c1">#for funcName in aggreAppParasDict[&quot;DFDealFunc&quot;][&quot;ClassName&quot;]:</span>
+    <span class="c1">#    strImport = &quot;from &quot; + aggreAppParasDict[&quot;DFDealFunc&quot;][&quot;ModuleName&quot;] + &quot; import &quot; + funcName</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">aggreAppParasDict</span><span class="p">[</span><span class="s2">&quot;DFDealFunc&quot;</span><span class="p">]:</span>
+        <span class="n">strImport</span> <span class="o">=</span> <span class="s2">&quot;from &quot;</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; import &quot;</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">exec</span><span class="p">(</span> <span class="n">strImport</span> <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;================= Import User dataframe process function error, programe will be killed !&quot;</span> <span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+<span class="c1">#def procAggredDataProcess( inPipe, dealFuncsList, globalQueue ):</span>
+<div class="viewcode-block" id="procAggredDataProcess"><a class="viewcode-back" href="../../Core.html#Core.aggregationFuncs.procAggredDataProcess">[文档]</a><span class="k">def</span> <span class="nf">procAggredDataProcess</span><span class="p">(</span> <span class="n">inPipe</span><span class="p">,</span> <span class="n">aggreAppParasDict</span><span class="p">,</span> <span class="n">globalQueue</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function running in the main thread of user dataframe analysis proecess, which is used to</span>
+<span class="sd">        creat the receiving and processing threads for further aggregated dataframe results with user&#39;s</span>
+<span class="sd">        defined processing algorithm, and initialize the corresponding queues for the receiving dataframe</span>
+<span class="sd">        temporary storage.</span>
+
+<span class="sd">        Args:\n</span>
+<span class="sd">            inPipe : data pipe used for the input aggregated dataframe results.\n</span>
+<span class="sd">            aggreAppParasDict: dict holds the parameters of user dataframe processing classes,</span>
+<span class="sd">            which are auto-imported.\n</span>
+<span class="sd">            globalQueue : the global running control for all process in this program</span>
+
+<span class="sd">        Return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dfQueueDict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">runningCtrlQueue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Multiple df processing function are performed in only one thread!!</span>
+    <span class="c1"># TODO</span>
+    <span class="c1">#for i in range(len(aggreAppParasDict[&quot;DFDealFunc&quot;][&quot;ClassName&quot;])):</span>
+    <span class="c1">#    dfQueueDict[i] = Queue()</span>
+    <span class="c1">#    print(i)</span>
+    <span class="n">dfQueueDict</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+    <span class="c1"># TODO</span>
+
+    <span class="n">threadList</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">threadList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">dfRecvThread</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">inPipe</span><span class="p">,</span> <span class="n">dfQueueDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span><span class="p">))</span> <span class="p">)</span>
+    <span class="n">threadList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">dfDealThread</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">dfQueueDict</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">aggreAppParasDict</span><span class="p">,</span> <span class="n">runningCtrlQueue</span><span class="p">,</span> <span class="n">globalQueue</span><span class="p">))</span> <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">eachThread</span> <span class="ow">in</span> <span class="n">threadList</span><span class="p">:</span>
+        <span class="n">eachThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">eachThread</span> <span class="ow">in</span> <span class="n">threadList</span><span class="p">:</span>
+        <span class="n">eachThread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span></div>
+
+    <span class="c1">#print( &quot; ============================ Stopping the dfDeal Process =================== &quot; )</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >模块代码</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2021, jiyizi.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5 创建。
+    </div>
+  </body>
+</html>

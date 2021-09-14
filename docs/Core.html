@@ -1,0 +1,706 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Core package &#8212; Kafka-DataProcess-Package 1.0 文档</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="core-package">
+<h1>Core package<a class="headerlink" href="#core-package" title="永久链接至标题">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="永久链接至标题">¶</a></h2>
+</div>
+<div class="section" id="module-Core.aggregationFuncs">
+<span id="core-aggregationfuncs-module"></span><h2>Core.aggregationFuncs module<a class="headerlink" href="#module-Core.aggregationFuncs" title="永久链接至标题">¶</a></h2>
+<dl class="function">
+<dt id="Core.aggregationFuncs.aggreFuncImport">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">aggreFuncImport</code><span class="sig-paren">(</span><em>aggreAppParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#aggreFuncImport"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.aggreFuncImport" title="永久链接至目标">¶</a></dt>
+<dd><p>This function is the old method to auto-import user’s dataframe processing class</p>
+<p>Args:</p>
+<blockquote>
+<div>aggreAppParasDict: dict holds the parameters of user dataframe processing classes,</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.checkLeftData">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">checkLeftData</code><span class="sig-paren">(</span><em>msg</em>, <em>leftDFList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#checkLeftData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.checkLeftData" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used to check the data in left list is far away from current pulse or not.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>msg(bytes) : current msg</p>
+<p>leftDFList : the list holds the left dataframe in the last aggregation operation.</p>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.dfDealThread">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">dfDealThread</code><span class="sig-paren">(</span><em>dfQueue</em>, <em>aggreAppParasDict</em>, <em>runningCtrlQueue</em>, <em>globalQueue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#dfDealThread"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.dfDealThread" title="永久链接至目标">¶</a></dt>
+<dd><p>This function used to apply the user data processing algorithms in the aggregated dataframe,
+which is in the another python process.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>dfQueue : data queue used to storage the received aggregated dataframe results.</p>
+<p>aggreAppParasDict: dict holds the parameters of user dataframe processing classes,
+which are auto-imported.</p>
+<p>runningCtrlQueue : the running control queue for this thread.</p>
+<p>globalQueue : the global running control for all process in this program.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.dfRecvThread">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">dfRecvThread</code><span class="sig-paren">(</span><em>inPipe</em>, <em>dfQueueDict</em>, <em>runningCtrlQueue</em>, <em>globalQueue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#dfRecvThread"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.dfRecvThread" title="永久链接至目标">¶</a></dt>
+<dd><p>This function used to receive the aggregated dataframe from the data aggregation process,
+for the next user data processing algorithm, which is in the another python process.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>inPipe : data pipe used for the input aggregated dataframe results.</p>
+<p>dfQueueDict : data queue used to storage the received aggregated dataframe results.</p>
+<p>runningCtrlQueue : the running control queue for this thread
+globalQueue : the global running control for all process in this program</p>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.getDFProcessClass">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">getDFProcessClass</code><span class="sig-paren">(</span><em>aggreAppParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#getDFProcessClass"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.getDFProcessClass" title="永久链接至目标">¶</a></dt>
+<dd><p>This function performs the auto-importing of user defined aggregated dataframe processing
+function, by the python sys env method.</p>
+<p>Args:</p>
+<blockquote>
+<div>aggreAppParasDict: dict holds the parameters of user dataframe processing classes,</div></blockquote>
+<p>Return: list of user dataframe processing class instances, which are used for next initialization.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.msgAggreThread">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">msgAggreThread</code><span class="sig-paren">(</span><em>outPipe</em>, <em>dataQueueDict</em>, <em>runningCtrlQueue</em>, <em>globalQueue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#msgAggreThread"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.msgAggreThread" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used in the thread of data aggration python process, for processing data
+in the data queue.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>outPipe : output data pipe for transfer the aggregated pandas dataframe for the further
+user data process.</p>
+<p>dataQueueDict : input data queue holds the data waiting for aggregation.</p>
+<p>runningCtrlQueue : the running control queue for this thread
+globalQueue : the global running control for all process in this program</p>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.msgRecvThread">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">msgRecvThread</code><span class="sig-paren">(</span><em>inPipeList</em>, <em>dataQueueDict</em>, <em>runningCtrlQueue</em>, <em>globalQueue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#msgRecvThread"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.msgRecvThread" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used in the thread of data aggration python process, for receiving data
+from the data consuming processs with the python data pipe. And put the
+received data the queue for the dataframe processing threads.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>inPipeList: input data pipe List</p>
+<p>dataQueueDict : output data queue</p>
+<p>runningCtrlQueue : the running control queue for this thread
+globalQueue : the global running control for all process in this program</p>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.procAggredDataProcess">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">procAggredDataProcess</code><span class="sig-paren">(</span><em>inPipe</em>, <em>aggreAppParasDict</em>, <em>globalQueue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#procAggredDataProcess"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.procAggredDataProcess" title="永久链接至目标">¶</a></dt>
+<dd><p>This function running in the main thread of user dataframe analysis proecess, which is used to
+creat the receiving and processing threads for further aggregated dataframe results with user’s
+defined processing algorithm, and initialize the corresponding queues for the receiving dataframe
+temporary storage.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>inPipe : data pipe used for the input aggregated dataframe results.</p>
+<p>aggreAppParasDict: dict holds the parameters of user dataframe processing classes,
+which are auto-imported.</p>
+<p>globalQueue : the global running control for all process in this program</p>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.aggregationFuncs.procAggregation">
+<code class="descclassname">Core.aggregationFuncs.</code><code class="descname">procAggregation</code><span class="sig-paren">(</span><em>inPipeList</em>, <em>outPipe</em>, <em>globalQueue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/aggregationFuncs.html#procAggregation"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.aggregationFuncs.procAggregation" title="永久链接至目标">¶</a></dt>
+<dd><p>This function running in the main thread of multiple original dataframe aggregation process,
+which is used to create data receiving and processing threads in this process, and initialize
+the items for data receiving and aggregation.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>inPipeList (List) : input list holds data pipes, which are used for transfer all the dataframes need to be aggregated.</p>
+<p>outPipe : out list holds the data pipe, which is used for transfer the aggregated dataframe.</p>
+<p>globalQueue : the global running control for all process in this program.</p>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Core.consumerFuncs">
+<span id="core-consumerfuncs-module"></span><h2>Core.consumerFuncs module<a class="headerlink" href="#module-Core.consumerFuncs" title="永久链接至标题">¶</a></h2>
+<p>This module defines the baisc and useful functions for Kafka consumer for CSNS Data,
+includeing the Pulse ID jumping, consumer auto-creation, data filtering, coroutine
+setting and so on.</p>
+<dl class="function">
+<dt id="Core.consumerFuncs.asynDataProcess">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">asynDataProcess</code><span class="sig-paren">(</span><em>eventLoop</em>, <em>executor</em>, <em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em>, <em>userObject</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/consumerFuncs.html#asynDataProcess"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.asynDataProcess" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract asyncio data processing function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.checkCutoff">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">checkCutoff</code><span class="sig-paren">(</span><em>waterList</em>, <em>waterIDList</em>, <em>cutoffFlag</em>, <em>endPulseID</em><span class="sig-paren">)</span> &#x2192; List[List[int]]<a class="reference internal" href="_modules/Core/consumerFuncs.html#checkCutoff"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.checkCutoff" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to cut the messages to user specified pulse ID, if cutoffFlag is true.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>waterList  : the input signal messages list, which has be sorted in most cases.</p>
+<p>waterIDList: the input message IDs list, its length should be same as waterList.</p>
+<p>cutoffFlag : the control flag used to decide cut messages or not.</p>
+<p>endPulseID : user specified end of messages.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>List[msg], List[PulseID]</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.createConsumers">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">createConsumers</code><span class="sig-paren">(</span><em>IP: str, nameTopic: str, Group_ID: str, numb: int, Consumers: List[str], consumerParasDict: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/Core/consumerFuncs.html#createConsumers"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.createConsumers" title="永久链接至目标">¶</a></dt>
+<dd><blockquote>
+<div><p>Used to create multi-consumers and return the consumers list, each one for one partition of a specified topic.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>IP: kafka broker address and port</p>
+<p>nameTopic: Kafka topic name</p>
+<p>Group_ID : name of consumer group</p>
+<p>numb: number of partitions of the topic</p>
+<p>consuemrParasDict: input user consuming mode configurations file</p>
+<p>Consumers: list use to hold all consumers instances</p>
+<p>jumpPulseID (in consumerParasDict): targe position user actually consuming for each partitions, define the expected jump offset:</p>
+<blockquote>
+<div><ol class="arabic simple" start="0">
+<li>from the lastest real-time msg if jumpPulseID is ‘-2’, which measn “group_id” doesn’t works</li>
+<li>from the latest msg if jumpPulseID is ‘-1’ (continue with offset position from the last data consuming)</li>
+<li>from the beginning for ‘0’ if jumpPulseID is 0</li>
+<li>from a specific position if expOffset is an integer larger than 0.</li>
+</ol>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.expOffsetFromID">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">expOffsetFromID</code><span class="sig-paren">(</span><em>consumer</em>, <em>partion</em>, <em>numb</em>, <em>protLength</em>, <em>jumpPulseID</em>, <em>absTimeStamp</em>, <em>absPulseID</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/Core/consumerFuncs.html#expOffsetFromID"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.expOffsetFromID" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to convert the input jumping Pulse ID to the expected Kafka offset of each partition for target topic</p>
+<p>Agrs:</p>
+<blockquote>
+<div><p>consumer : Kafka consumer instance</p>
+<p>partion  : partition of the topic</p>
+<p>numb     : total number of patitions for target topic</p>
+<p>protLength : input jumping protecting message length</p>
+<p>jumpPulseID: target jumping pulse ID</p>
+<p>absTimeStamp : the absolute time stamp of specified CSNS pulse</p>
+<p>absPulseID(int)   : the absolute pulse ID of specified CSNS pulse</p>
+</div></blockquote>
+<p>Return:</p>
+<blockquote>
+<div>int : expected offset of the jumping pulse ID for the partition</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.fillPools">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">fillPools</code><span class="sig-paren">(</span><em>Pool_msg: List[bytes], Pool_ID: List[int], msg: bytes, Invalid_ID: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/Core/consumerFuncs.html#fillPools"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.fillPools" title="永久链接至目标">¶</a></dt>
+<dd><p>Note: the messges are sorted by its key, whose value is same as the Pulse ID.
+So, the sorting procedure is independent on the flatbuffers encoding/decoding method.</p>
+<p>Args:</p>
+<blockquote>
+<div>Pool_msg   :  global messages pool
+Pool_ID    :  global Pulse ID pool
+msg        :  messages data
+Invalid_ID : invalid pulse ID for the ‘None’ messages</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.filterWater">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">filterWater</code><span class="sig-paren">(</span><em>waterList</em>, <em>waterIDList</em>, <em>consumerParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/consumerFuncs.html#filterWater"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.filterWater" title="永久链接至目标">¶</a></dt>
+<dd><p>This function is used to filter the messages from user specified Pulse ID.
+Normally, the first message ID will be not the target jumping pulse ID,
+so we need to use this function to filter our wanted messages.</p>
+<p>Agrs:</p>
+<blockquote>
+<div><p>waterList: the target sorted messages list, which will be used in further by user.</p>
+<p>waterIDList: the IDs list of waterList, which is used for the messages filtering</p>
+<p>consuemrParasDict: input user consuming mode configurations file</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>List[msg], List[ID], bool( msg filtering control flag )</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.fixCPUTime">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">fixCPUTime</code><span class="sig-paren">(</span><em>waitTime: int</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/Core/consumerFuncs.html#fixCPUTime"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.fixCPUTime" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to occupy a fixed CPU calculation time. The ‘time.sleep(t)’ method will
+pause this thread/process to other threads/processes, so the actual time used
+will be large than the target time.</p>
+<p>Args:</p>
+<blockquote>
+<div>waitTime (int) : input wating time</div></blockquote>
+<dl class="docutils">
+<dt>Retrun:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.freeWater">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">freeWater</code><span class="sig-paren">(</span><em>Pool_msg</em>, <em>Pool_ID</em>, <em>sliceSize</em>, <em>Last_msg</em>, <em>Last_ID</em>, <em>sortFlag</em>, <em>filterGate</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/consumerFuncs.html#freeWater"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.freeWater" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to release messages and IDs from the pools when their are full.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>Pool_msg: the fulled messages pool</p>
+<p>Pool_ID : the filled IDs pool</p>
+<p>waterList: the target sorted messages list, which will be used in further by users</p>
+<p>waterIDList: the pulse ID of target sorted messages list, which will be used in further by users</p>
+<p>sliceSize: the length of front messages in the filled messages pool</p>
+<p>Last_msg: the left messages in the pool after the releasing of water from pool</p>
+<p>Last_ID : the left IDs in the pool after the releasing of water from pool</p>
+<p>sortFlag: the flag for message sorting or not</p>
+<p>filterGate: the gate for message filtering or not</p>
+</div></blockquote>
+<p>Return:</p>
+<blockquote>
+<div>List[msg], List[ID], List[msg], List[ID], List[msg], List[ID]</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.getID">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">getID</code><span class="sig-paren">(</span><em>msg: bytes</em>, <em>Invalid_ID: int</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/Core/consumerFuncs.html#getID"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.getID" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to get the pulse ID for input message.</p>
+<p>The decoding method is automatically generated by flatbuffers serialization.</p>
+<p>Note: since we read messages from all partions, there will be a case that some partitions have messages and others are “None”.
+For this case, we set the invalid_ID for the pulse ID for the “None” messages. So the “None” messages will be in the end
+of the messages pool by sorting with the pulse ID, we just left the “None” messages in the pool and don’t use them.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>msg : recieved msg data ( in binary format )</p>
+<p>Invalid_ID : the defined invalid pulse ID to identify tue non-physical data</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>the pulse ID</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.getNumOfPartitions">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">getNumOfPartitions</code><span class="sig-paren">(</span><em>brokerIP: str</em>, <em>topicName: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/Core/consumerFuncs.html#getNumOfPartitions"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.getNumOfPartitions" title="永久链接至目标">¶</a></dt>
+<dd><blockquote>
+<div><p>Used to get the number of partition for the specified topic</p>
+<p>Args:</p>
+<blockquote>
+<div>brokerIP (int): string of broker IP, i.e. “localhost:9092</div></blockquote>
+</div></blockquote>
+<dl class="docutils">
+<dt>“</dt>
+<dd><blockquote class="first">
+<div>topicName(str): name of target topic</div></blockquote>
+<p>Returns:</p>
+<blockquote class="last">
+<div>int: number of partitions</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.msgRun">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">msgRun</code><span class="sig-paren">(</span><em>coroutineFlag</em>, <em>eventLoop</em>, <em>executor</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>msg</em>, <em>batchModeFlag</em>, <em>runStep</em>, <em>slowConsumerInSecond</em>, <em>glbCtrlDict</em>, <em>eventCounter</em>, <em>dataPipeDict</em>, <em>userObjectList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/consumerFuncs.html#msgRun"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.msgRun" title="永久链接至目标">¶</a></dt>
+<dd><p>User message processing interface, which is the entrance for user’s data processing codes</p>
+<p>Args:</p>
+<blockquote>
+<div><p>coroutineFlag : asyncio coroutineFlag mode control flag</p>
+<p>eventLoop : asyncio event loop</p>
+<p>executor  : asyncio executor</p>
+<p>detectorTypeCode : the encoding of detector type</p>
+<p>dataType  : data types of CSNS data format, should be “EventData”, “RawData” or “MetaData”</p>
+<p>msg : signal data streaming after the pre data processing</p>
+<p>batchModeFlag : input control flag for synchronization consuming of multiple topics, True or False</p>
+<p>runStep       : run step of batch consuming mode</p>
+<p>slowConsumerInSecond : input factor in second to slow down user consuming speed</p>
+<p>glbCtrlDict : global program running ctrl dict</p>
+<p>eventCounter: the global event counter for each topic</p>
+<p>dataPipeDict: data pipe dict used to transfer the data after user processing, from this process to aggregation process</p>
+<p>userObjectList: list hold user data processing algorithms</p>
+</div></blockquote>
+<p>Return:</p>
+<blockquote>
+<div>int : eventCounter</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.releasePool">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">releasePool</code><span class="sig-paren">(</span><em>eventLoop</em>, <em>executor</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>Last_msg</em>, <em>Last_ID</em>, <em>consumerParasDict</em>, <em>glbCtrlDict</em>, <em>eventCounter</em>, <em>dataPipeDict</em>, <em>userObjectList</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/Core/consumerFuncs.html#releasePool"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.releasePool" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to release the message pool after the final loop, since after the last message loop,
+the message pool will be not full, which means the size of Last_msg and Last_ID will smaller
+than the poolSize. And there are must be some “None” messages in the Pool_msg and invalid_ID
+in the Pool_ID, because the number of messages of each partition are not same. For this case,
+we use the addtional “None” messages to full the Pool_msg and Pool_ID, sort the messages and pull the valid ones.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>eventLoop: asyncio event loop</p>
+<p>executor : asyncio executor</p>
+<p>detectorTypeCode : the encoding of detector type</p>
+<p>Last_msg : list hold the msg after free water function</p>
+<p>Last_ID  : list hold the IDs after free water function</p>
+<p>consuemrParasDict: input user consuming mode configurations file</p>
+<p>glbCtrlDict : global program running ctrl dict</p>
+<p>eventCounter: the global event counter for each topic</p>
+<p>dataPipeDict: data pipe dict used to transfer the data after user processing, from this process to aggregation process</p>
+<p>userObjectList: list hold user data processing algorithms;</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.timeToID">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">timeToID</code><span class="sig-paren">(</span><em>standardTime: str</em>, <em>absTimeStamp: int</em>, <em>absPulseID: int</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/Core/consumerFuncs.html#timeToID"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.timeToID" title="永久链接至目标">¶</a></dt>
+<dd><p>Converting the timestamp the CSNS pulseID</p>
+<p>Args:</p>
+<blockquote>
+<div><p>standardTime(str) : the target time (format: “%Y-%m-%d %H:%M:%S”)</p>
+<p>absTimeStamp(int) : the absolute time stamp of specified CSNS pulse</p>
+<p>absPulseID(int)   : the absolute pulse ID of specified CSNS pulse</p>
+</div></blockquote>
+<p>Return:</p>
+<blockquote>
+<div>int: the expected pulse ID for the input time</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.consumerFuncs.zipConsumers">
+<code class="descclassname">Core.consumerFuncs.</code><code class="descname">zipConsumers</code><span class="sig-paren">(</span><em>consumerList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/consumerFuncs.html#zipConsumers"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.consumerFuncs.zipConsumers" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to zip the consumers list. So that user don’t need to
+specify the number of messages and consumers in the data reading procedure now!</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Core.runCtrl">
+<span id="core-runctrl-module"></span><h2>Core.runCtrl module<a class="headerlink" href="#module-Core.runCtrl" title="永久链接至标题">¶</a></h2>
+<dl class="function">
+<dt id="Core.runCtrl.checkModulesImport">
+<code class="descclassname">Core.runCtrl.</code><code class="descname">checkModulesImport</code><span class="sig-paren">(</span><em>topicsParseList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/runCtrl.html#checkModulesImport"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.runCtrl.checkModulesImport" title="永久链接至目标">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Core.runCtrl.initDataBusDict">
+<code class="descclassname">Core.runCtrl.</code><code class="descname">initDataBusDict</code><span class="sig-paren">(</span><em>topicsParseList</em>, <em>appParseList</em>, <em>consuDict</em>, <em>aggreDict</em>, <em>analyDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/runCtrl.html#initDataBusDict"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.runCtrl.initDataBusDict" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used to fill the lists hold global items</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.runCtrl.parseRunParas">
+<code class="descclassname">Core.runCtrl.</code><code class="descname">parseRunParas</code><span class="sig-paren">(</span><em>jsonFile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/runCtrl.html#parseRunParas"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.runCtrl.parseRunParas" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used to parse the input json parameters file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.runCtrl.processAsyner">
+<code class="descclassname">Core.runCtrl.</code><code class="descname">processAsyner</code><span class="sig-paren">(</span><em>numbOfTopics</em>, <em>glbCtrlDict</em>, <em>topicConfName</em>, <em>consumerConfName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/runCtrl.html#processAsyner"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.runCtrl.processAsyner" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used to create an isolate python process, for controlling the synchronization
+of different consuimg python processes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.runCtrl.sigint_handle">
+<code class="descclassname">Core.runCtrl.</code><code class="descname">sigint_handle</code><span class="sig-paren">(</span><em>stopQueue</em>, <em>signum</em>, <em>frame</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/runCtrl.html#sigint_handle"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.runCtrl.sigint_handle" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used to stop the data consuming gracefully, with the linux signal method.</p>
+<p>After the starting of the program, the stopping PID will displayed, and user can stop the
+program by “kill -9 PID”</p>
+<p>Note: the stopping PID also can be obtained by “ps -aux <a href="#id1"><span class="problematic" id="id2">|</span></a>grep KDP-Control-Process”</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Core.templateDFProcess">
+<span id="core-templatedfprocess-module"></span><h2>Core.templateDFProcess module<a class="headerlink" href="#module-Core.templateDFProcess" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Core.templateDFProcess.DFProcess">
+<em class="property">class </em><code class="descclassname">Core.templateDFProcess.</code><code class="descname">DFProcess</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateDFProcess.html#DFProcess"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateDFProcess.DFProcess" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(在 Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class is the template for the pandas dataframe further processing.
+User should override the ‘processDF’ function in practice.</p>
+<dl class="method">
+<dt id="Core.templateDFProcess.DFProcess.collectData">
+<code class="descname">collectData</code><span class="sig-paren">(</span><em>resultList</em>, <em>endPoint</em>, <em>Metric</em>, <em>value</em>, <em>time_st</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateDFProcess.html#DFProcess.collectData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateDFProcess.DFProcess.collectData" title="永久链接至目标">¶</a></dt>
+<dd><p>Template function used to format data for further push to OpenFalcon platform</p>
+<p>Args:</p>
+<blockquote>
+<div><p>resultList : list holds records of user target visualization results</p>
+<p>endPoint (str) : name of endPoint for OpenFalcon</p>
+<p>Metric (str) : name of metric for OpenFalcon</p>
+<p>valaue (data): user data processing results</p>
+<p>time_st      : time stamp for OpenFalcon</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateDFProcess.DFProcess.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateDFProcess.html#DFProcess.finalize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateDFProcess.DFProcess.finalize" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract finalization function, user should free items here.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateDFProcess.DFProcess.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateDFProcess.html#DFProcess.initialize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateDFProcess.DFProcess.initialize" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract initialization function, user should define the body for his item here.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateDFProcess.DFProcess.onlineDisplay">
+<code class="descname">onlineDisplay</code><span class="sig-paren">(</span><em>resultList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateDFProcess.html#DFProcess.onlineDisplay"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateDFProcess.DFProcess.onlineDisplay" title="永久链接至目标">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Core.templateDFProcess.DFProcess.processDF">
+<code class="descname">processDF</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateDFProcess.html#DFProcess.processDF"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateDFProcess.DFProcess.processDF" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract pandas dataframe processing function, user should override it for his analysis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateDFProcess.DFProcess.requestPV">
+<code class="descname">requestPV</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateDFProcess.html#DFProcess.requestPV"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateDFProcess.DFProcess.requestPV" title="永久链接至目标">¶</a></dt>
+<dd><p>Template function used to push collect records to OpenFalcon</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>Remove IP: which is defined in the initialization of the class
+result   : the collected list of data records</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Core.templateMsgProcess">
+<span id="core-templatemsgprocess-module"></span><h2>Core.templateMsgProcess module<a class="headerlink" href="#module-Core.templateMsgProcess" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Core.templateMsgProcess.MsgProcess">
+<em class="property">class </em><code class="descclassname">Core.templateMsgProcess.</code><code class="descname">MsgProcess</code><span class="sig-paren">(</span><em>appName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(在 Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class is the template for the user Kafka message processing.
+User should override the ‘run’ function in practice.</p>
+<dl class="method">
+<dt id="Core.templateMsgProcess.MsgProcess.closeLogger">
+<code class="descname">closeLogger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess.closeLogger"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess.closeLogger" title="永久链接至目标">¶</a></dt>
+<dd><p>Function used to close the logger.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateMsgProcess.MsgProcess.collecteData">
+<code class="descname">collecteData</code><span class="sig-paren">(</span><em>resultList</em>, <em>endPoint</em>, <em>Metric</em>, <em>value</em>, <em>time_st</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess.collecteData"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess.collecteData" title="永久链接至目标">¶</a></dt>
+<dd><p>Template function used to format data for further push to OpenFalcon platform</p>
+<p>Args:</p>
+<blockquote>
+<div><p>resultList : list holds records of user target visualization results</p>
+<p>endPoint (str) : name of endPoint for OpenFalcon</p>
+<p>Metric (str) : name of metric for OpenFalcon</p>
+<p>valaue (data): user data processing results</p>
+<p>time_st      : time stamp for OpenFalcon</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateMsgProcess.MsgProcess.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><em>topicParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess.finalize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess.finalize" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract finalization function, user should free items here.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateMsgProcess.MsgProcess.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>topicParasDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess.initialize"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess.initialize" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract initialization function, user should define the body for his item here.</p>
+<p>Args:</p>
+<blockquote>
+<div>topicParasDict: input dict for topic information, i.e. IP, name and so on. So user can do they item
+initializations with these information.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateMsgProcess.MsgProcess.requestPV">
+<code class="descname">requestPV</code><span class="sig-paren">(</span><em>result</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess.requestPV"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess.requestPV" title="永久链接至目标">¶</a></dt>
+<dd><p>Template function used to push collect records to OpenFalcon</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>Remove IP: which is defined in the initialization of the class
+result   : the collected list of data records</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateMsgProcess.MsgProcess.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess.run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess.run" title="永久链接至目标">¶</a></dt>
+<dd><p>Abstract user Kafka data processing function, user should override it for his analysis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Core.templateMsgProcess.MsgProcess.setupUserLogger">
+<code class="descname">setupUserLogger</code><span class="sig-paren">(</span><em>nameTopic</em>, <em>outputFile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/templateMsgProcess.html#MsgProcess.setupUserLogger"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.templateMsgProcess.MsgProcess.setupUserLogger" title="永久链接至目标">¶</a></dt>
+<dd><p>Template python logger setting function.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>nameTopic (str) : name of the topic</p>
+<p>outputFile (str): name of the output file</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-Core.worker">
+<span id="core-worker-module"></span><h2>Core.worker module<a class="headerlink" href="#module-Core.worker" title="永久链接至标题">¶</a></h2>
+<dl class="class">
+<dt id="Core.worker.Run">
+<em class="property">class </em><code class="descclassname">Core.worker.</code><code class="descname">Run</code><span class="sig-paren">(</span><em>topicParasDict</em>, <em>consumerParasDict</em>, <em>glbCtrlDict</em>, <em>appParasDict</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/worker.html#Run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.worker.Run" title="永久链接至目标">¶</a></dt>
+<dd><p>基类：<code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.context.Process</span></code></p>
+<p>This class used to instantiation the workers for data consuming.
+In current version, each instance of this class occupy one python process to do the work.</p>
+<dl class="method">
+<dt id="Core.worker.Run.checkParas">
+<code class="descname">checkParas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/worker.html#Run.checkParas"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.worker.Run.checkParas" title="永久链接至目标">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Core.worker.Run.getUserObjects">
+<code class="descname">getUserObjects</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/worker.html#Run.getUserObjects"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.worker.Run.getUserObjects" title="永久链接至目标">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Core.worker.Run.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/worker.html#Run.run"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.worker.Run.run" title="永久链接至目标">¶</a></dt>
+<dd><p>Method to be run in sub-process; can be overridden in sub-class</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Core.worker.dataConsuming">
+<code class="descclassname">Core.worker.</code><code class="descname">dataConsuming</code><span class="sig-paren">(</span><em>eventLoop</em>, <em>executor</em>, <em>eventCounter</em>, <em>topicParasDict</em>, <em>consumerParasDict</em>, <em>userObjectList</em>, <em>glbCtrlDict</em>, <em>dataPipeDict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Core/worker.html#dataConsuming"><span class="viewcode-link">[源代码]</span></a><a class="headerlink" href="#Core.worker.dataConsuming" title="永久链接至目标">¶</a></dt>
+<dd><p>Used to creat consumer instances and do the data consuming</p>
+<p>Args:</p>
+<blockquote>
+<div><p>eventLoop : asyncio event loop</p>
+<p>executor  : asyncio executor</p>
+<p>eventCounter: the global event counter for each topic</p>
+<p>topicParasDict: dict holds topic informations, i.e. IP, name, datatype…</p>
+<p>consuemrParasDict: input user consuming mode configurations file</p>
+<p>userObjectList: list hold user data processing algorithms</p>
+<p>glbCtrlDict : global program running ctrl dict</p>
+<p>dataPipeDict: data pipe dict used to transfer the data after user processing, from this process to aggregation process</p>
+</div></blockquote>
+<p>Return: None</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Core" title="永久链接至标题">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Core package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-Core.aggregationFuncs">Core.aggregationFuncs module</a></li>
+<li><a class="reference internal" href="#module-Core.consumerFuncs">Core.consumerFuncs module</a></li>
+<li><a class="reference internal" href="#module-Core.runCtrl">Core.runCtrl module</a></li>
+<li><a class="reference internal" href="#module-Core.templateDFProcess">Core.templateDFProcess module</a></li>
+<li><a class="reference internal" href="#module-Core.templateMsgProcess">Core.templateMsgProcess module</a></li>
+<li><a class="reference internal" href="#module-Core.worker">Core.worker module</a></li>
+<li><a class="reference internal" href="#module-Core">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Core.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2021, jiyizi.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5 创建。
+    </div>
+  </body>
+</html>

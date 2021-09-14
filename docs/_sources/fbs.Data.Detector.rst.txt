@@ -1,0 +1,38 @@
+fbs.Data.Detector package
+=========================
+
+Submodules
+----------
+
+fbs.Data.Detector.EventData module
+----------------------------------
+
+.. automodule:: fbs.Data.Detector.EventData
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+fbs.Data.Detector.MetaData module
+---------------------------------
+
+.. automodule:: fbs.Data.Detector.MetaData
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+fbs.Data.Detector.RawData module
+--------------------------------
+
+.. automodule:: fbs.Data.Detector.RawData
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: fbs.Data.Detector
+    :members:
+    :undoc-members:
+    :show-inheritance:
