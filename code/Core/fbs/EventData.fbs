@@ -1,0 +1,9 @@
+namespace Data.Detector;
+
+table EventData {
+  pulse_id:uint64;
+  tof:[uint32];
+  pos:[uint32];
+}
+
+root_type EventData;

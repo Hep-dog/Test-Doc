@@ -1,0 +1,8 @@
+namespace Data.Detector;
+
+table RawData {
+  pulse_id:uint64;
+  raw_value:[ubyte];
+}
+
+root_type RawData;
