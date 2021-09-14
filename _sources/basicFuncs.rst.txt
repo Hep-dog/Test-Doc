@@ -1,7 +1,0 @@
-basicFuncs module
-=================
-
-.. automodule:: basicFuncs
-    :members:
-    :undoc-members:
-    :show-inheritance:

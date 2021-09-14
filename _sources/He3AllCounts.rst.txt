@@ -1,7 +1,0 @@
-He3AllCounts module
-===================
-
-.. automodule:: He3AllCounts
-    :members:
-    :undoc-members:
-    :show-inheritance:
