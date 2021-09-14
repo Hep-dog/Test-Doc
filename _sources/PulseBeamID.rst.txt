@@ -1,0 +1,7 @@
+PulseBeamID module
+==================
+
+.. automodule:: PulseBeamID
+    :members:
+    :undoc-members:
+    :show-inheritance:

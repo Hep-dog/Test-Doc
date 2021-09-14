@@ -1,0 +1,131 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay &#8212; Kafka-DataProcess-Package 1.0 文档</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="索引" href="../../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">模块代码</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay 源代码</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">Core.templateDFProcess</span> <span class="k">import</span> <span class="n">DFProcess</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This class is used to process the aggregated dataframe from monitor and pulse beam:</span>
+<span class="sd">        data format:    Pulse ID, monitorCNT, proton charge, timesecond, timenano</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="MonitorProtonDisplay"><a class="viewcode-back" href="../../../../Instance.DataAggregation.DFProcessFuncs.html#Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay.MonitorProtonDisplay">[文档]</a><span class="k">class</span> <span class="nc">MonitorProtonDisplay</span><span class="p">(</span><span class="n">DFProcess</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pulseFre</span>   <span class="o">=</span> <span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secFactor</span>  <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataDict</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dataList&quot;</span><span class="p">:[],</span> <span class="s2">&quot;leftData&quot;</span><span class="p">:[],</span> <span class="s2">&quot;idList&quot;</span><span class="p">:[],</span> <span class="s2">&quot;leftIDList&quot;</span><span class="p">:[]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endPoint</span>   <span class="o">=</span> <span class="s2">&quot;Test-BL20&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span>     <span class="o">=</span> <span class="s2">&quot;lalala&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushAddress</span><span class="o">=</span> <span class="s1">&#39;http://10.1.26.63:1988/v1/push&#39;</span>
+
+<div class="viewcode-block" id="MonitorProtonDisplay.monitorDevideProton"><a class="viewcode-back" href="../../../../Instance.DataAggregation.DFProcessFuncs.html#Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay.MonitorProtonDisplay.monitorDevideProton">[文档]</a>    <span class="k">def</span> <span class="nf">monitorDevideProton</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">v_moni</span><span class="p">,</span> <span class="n">v_proton</span> <span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v_proton</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">v_moni</span><span class="o">/</span> <span class="n">v_proton</span>
+            <span class="k">elif</span> <span class="n">v_proton</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="MonitorProtonDisplay.myDivide"><a class="viewcode-back" href="../../../../Instance.DataAggregation.DFProcessFuncs.html#Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay.MonitorProtonDisplay.myDivide">[文档]</a>    <span class="k">def</span> <span class="nf">myDivide</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span> <span class="p">):</span>
+        <span class="n">resultList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="nb">map</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitorDevideProton</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span> <span class="n">resultList</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MonitorProtonDisplay.processDF"><a class="viewcode-back" href="../../../../Instance.DataAggregation.DFProcessFuncs.html#Instance.DataAggregation.DFProcessFuncs.MonitorProtonDisplay.MonitorProtonDisplay.processDF">[文档]</a>    <span class="k">def</span> <span class="nf">processDF</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">df</span> <span class="p">):</span>
+        <span class="n">devideResult</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataList</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idList</span>   <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idList</span><span class="p">)):</span>
+            <span class="n">dataVec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataList</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">devideResult</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitorDevideProton</span><span class="p">(</span> <span class="n">dataVec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dataVec</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">onlineDisplay</span><span class="p">(</span> <span class="n">devideResult</span> <span class="p">)</span>
+        <span class="n">devideResult</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
+
+
+
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >模块代码</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2021, jiyizi.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5 创建。
+    </div>
+  </body>
+</html>

@@ -1,0 +1,154 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Core.templateDFProcess &#8212; Kafka-DataProcess-Package 1.0 文档</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="索引" href="../../genindex.html" />
+    <link rel="search" title="搜索" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">模块代码</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Core.templateDFProcess 源代码</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">requests</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">time</span>
+
+<div class="viewcode-block" id="DFProcess"><a class="viewcode-back" href="../../Core.html#Core.templateDFProcess.DFProcess">[文档]</a><span class="k">class</span> <span class="nc">DFProcess</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This class is the template for the pandas dataframe further processing.</span>
+<span class="sd">        User should override the &#39;processDF&#39; function in practice.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pulseFre</span>   <span class="o">=</span> <span class="mi">25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secFactor</span>  <span class="o">=</span> <span class="mi">30</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataDict</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dataList&quot;</span><span class="p">:[],</span> <span class="s2">&quot;leftData&quot;</span><span class="p">:[],</span> <span class="s2">&quot;idList&quot;</span><span class="p">:[],</span> <span class="s2">&quot;leftIDList&quot;</span><span class="p">:[]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endPoint</span>   <span class="o">=</span> <span class="s2">&quot;Jiyizi-test&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span>     <span class="o">=</span> <span class="s2">&quot;xxxxx&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pushAddress</span><span class="o">=</span> <span class="s1">&#39;http://10.1.26.63:1988/v1/push&#39;</span>
+
+<div class="viewcode-block" id="DFProcess.initialize"><a class="viewcode-back" href="../../Core.html#Core.templateDFProcess.DFProcess.initialize">[文档]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Abstract initialization function, user should define the body for his item here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DFProcess.finalize"><a class="viewcode-back" href="../../Core.html#Core.templateDFProcess.DFProcess.finalize">[文档]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Abstract finalization function, user should free items here.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DFProcess.collectData"><a class="viewcode-back" href="../../Core.html#Core.templateDFProcess.DFProcess.collectData">[文档]</a>    <span class="k">def</span> <span class="nf">collectData</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">resultList</span><span class="p">,</span> <span class="n">endPoint</span><span class="p">,</span> <span class="n">Metric</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">time_st</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Template function used to format data for further push to OpenFalcon platform\n</span>
+<span class="sd">            Args:\n</span>
+<span class="sd">                resultList : list holds records of user target visualization results\n</span>
+<span class="sd">                endPoint (str) : name of endPoint for OpenFalcon\n</span>
+<span class="sd">                Metric (str) : name of metric for OpenFalcon\n</span>
+<span class="sd">                valaue (data): user data processing results\n</span>
+<span class="sd">                time_st      : time stamp for OpenFalcon\n</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">record</span><span class="p">[</span><span class="s1">&#39;endPoint&#39;</span><span class="p">]</span>      <span class="o">=</span> <span class="n">endPoint</span>
+        <span class="n">record</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">]</span>          <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">record</span><span class="p">[</span><span class="s1">&#39;counterType&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="s1">&#39;GAUGE&#39;</span>
+        <span class="n">record</span><span class="p">[</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span>        <span class="o">=</span> <span class="n">Metric</span>
+        <span class="n">record</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>         <span class="o">=</span> <span class="n">value</span>
+        <span class="n">record</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span>     <span class="o">=</span> <span class="n">time_st</span>
+        <span class="n">resultList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">record</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DFProcess.requestPV"><a class="viewcode-back" href="../../Core.html#Core.templateDFProcess.DFProcess.requestPV">[文档]</a>    <span class="k">def</span> <span class="nf">requestPV</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">result</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Template function used to push collect records to OpenFalcon\n</span>
+<span class="sd">            Args:</span>
+<span class="sd">                Remove IP: which is defined in the initialization of the class</span>
+<span class="sd">                result   : the collected list of data records</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">roll</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">pushAddress</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">roll</span></div>
+
+<div class="viewcode-block" id="DFProcess.onlineDisplay"><a class="viewcode-back" href="../../Core.html#Core.templateDFProcess.DFProcess.onlineDisplay">[文档]</a>    <span class="k">def</span> <span class="nf">onlineDisplay</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">resultList</span> <span class="p">):</span>
+        <span class="n">targetList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">time_st</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">resultList</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">collectData</span><span class="p">(</span> <span class="n">targetList</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endPoint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">time_st</span> <span class="p">)</span>
+
+        <span class="n">roll</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">requestPV</span><span class="p">(</span><span class="n">targetList</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot; ++++++++++++++++++++++++++++ requests sending status: &quot;</span><span class="p">,</span> <span class="n">roll</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot; ++++++++++++++++++++++++ &quot;</span>  <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DFProcess.processDF"><a class="viewcode-back" href="../../Core.html#Core.templateDFProcess.DFProcess.processDF">[文档]</a>    <span class="k">def</span> <span class="nf">processDF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Abstract pandas dataframe processing function, user should override it for his analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="转向" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python 模块索引"
+             >模块</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Kafka-DataProcess-Package 1.0 文档</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >模块代码</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2021, jiyizi.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5 创建。
+    </div>
+  </body>
+</html>

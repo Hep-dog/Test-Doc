@@ -1,0 +1,54 @@
+DFProcessFuncs package
+======================
+
+Submodules
+----------
+
+DFProcessFuncs.DetectorTotalCount module
+----------------------------------------
+
+.. automodule:: DFProcessFuncs.DetectorTotalCount
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DFProcessFuncs.FRPVs module
+---------------------------
+
+.. automodule:: DFProcessFuncs.FRPVs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DFProcessFuncs.MonitorProtonDisplay module
+------------------------------------------
+
+.. automodule:: DFProcessFuncs.MonitorProtonDisplay
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DFProcessFuncs.MonitorProtonToDB module
+---------------------------------------
+
+.. automodule:: DFProcessFuncs.MonitorProtonToDB
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+DFProcessFuncs.SRPVs module
+---------------------------
+
+.. automodule:: DFProcessFuncs.SRPVs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: DFProcessFuncs
+    :members:
+    :undoc-members:
+    :show-inheritance:
