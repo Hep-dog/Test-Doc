@@ -1,7 +1,0 @@
-DetectorTotalCount module
-=========================
-
-.. automodule:: DetectorTotalCount
-    :members:
-    :undoc-members:
-    :show-inheritance:

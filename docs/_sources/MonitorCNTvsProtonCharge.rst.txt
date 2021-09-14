@@ -1,7 +1,0 @@
-MonitorCNTvsProtonCharge module
-===============================
-
-.. automodule:: MonitorCNTvsProtonCharge
-    :members:
-    :undoc-members:
-    :show-inheritance:

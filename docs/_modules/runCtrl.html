@@ -1,0 +1,149 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zk_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>runCtrl &#8212; Test 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for runCtrl</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">setproctitle</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Pipe</span>
+
+<div class="viewcode-block" id="parseRunParas"><a class="viewcode-back" href="../runCtrl.html#runCtrl.parseRunParas">[docs]</a><span class="k">def</span> <span class="nf">parseRunParas</span><span class="p">(</span> <span class="n">jsonFile</span> <span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span> <span class="n">jsonFile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span> <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">runParas</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">runParas</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="initDataBusDict"><a class="viewcode-back" href="../runCtrl.html#runCtrl.initDataBusDict">[docs]</a><span class="k">def</span> <span class="nf">initDataBusDict</span><span class="p">(</span> <span class="n">topicsParseList</span><span class="p">,</span> <span class="n">appParseList</span><span class="p">,</span> <span class="n">consuDict</span><span class="p">,</span> <span class="n">aggreDict</span><span class="p">,</span> <span class="n">analyDict</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">appName</span> <span class="ow">in</span> <span class="n">appParseList</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">appParseList</span><span class="p">[</span><span class="n">appName</span><span class="p">][</span><span class="s1">&#39;AppType&#39;</span><span class="p">]</span> <span class="o">==</span><span class="s1">&#39;Aggre&#39;</span><span class="p">:</span>
+            <span class="n">secondDataPipe</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">()</span>
+            <span class="n">aggreDict</span><span class="p">[</span><span class="s1">&#39;inDataPipeDict&#39;</span><span class="p">][</span><span class="n">appName</span><span class="p">]</span>  <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">aggreDict</span><span class="p">[</span><span class="s1">&#39;outDataPipeDict&#39;</span><span class="p">][</span><span class="n">appName</span><span class="p">]</span> <span class="o">=</span> <span class="n">secondDataPipe</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">analyDict</span><span class="p">[</span><span class="s1">&#39;inDataPipeDict&#39;</span><span class="p">][</span><span class="n">appName</span><span class="p">]</span>  <span class="o">=</span> <span class="n">secondDataPipe</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">analyDict</span><span class="p">[</span><span class="s1">&#39;dfDealFuncDict&#39;</span><span class="p">][</span><span class="n">appName</span><span class="p">]</span>  <span class="o">=</span> <span class="n">appParseList</span><span class="p">[</span><span class="n">appName</span><span class="p">][</span><span class="s1">&#39;DFDealFunc&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">topicParas</span> <span class="ow">in</span> <span class="n">topicsParseList</span><span class="p">:</span>
+        <span class="n">consuDict</span><span class="p">[</span><span class="s1">&#39;outDataPipeDict&#39;</span><span class="p">][</span><span class="n">topicParas</span><span class="p">[</span><span class="s1">&#39;TopicName&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">aggreName</span> <span class="ow">in</span> <span class="n">topicParas</span><span class="p">[</span><span class="s1">&#39;Apps&#39;</span><span class="p">][</span><span class="s1">&#39;Aggre&#39;</span><span class="p">]:</span>
+            <span class="n">firstDataPipe</span> <span class="o">=</span> <span class="n">Pipe</span><span class="p">()</span>
+            <span class="n">consuDict</span><span class="p">[</span><span class="s1">&#39;outDataPipeDict&#39;</span><span class="p">][</span><span class="n">topicParas</span><span class="p">[</span><span class="s1">&#39;TopicName&#39;</span><span class="p">]][</span><span class="n">aggreName</span><span class="p">]</span> <span class="o">=</span> <span class="n">firstDataPipe</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">aggreDict</span><span class="p">[</span><span class="s1">&#39;inDataPipeDict&#39;</span><span class="p">][</span><span class="n">aggreName</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">firstDataPipe</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">consuDict</span><span class="p">,</span> <span class="n">aggreDict</span><span class="p">,</span> <span class="n">analyDict</span></div>
+
+<div class="viewcode-block" id="checkModulesImport"><a class="viewcode-back" href="../runCtrl.html#runCtrl.checkModulesImport">[docs]</a><span class="k">def</span> <span class="nf">checkModulesImport</span><span class="p">(</span> <span class="n">topicsParseList</span> <span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="sigint_handle"><a class="viewcode-back" href="../runCtrl.html#runCtrl.sigint_handle">[docs]</a><span class="k">def</span> <span class="nf">sigint_handle</span><span class="p">(</span> <span class="n">stopQueue</span><span class="p">,</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span> <span class="p">):</span>
+    <span class="k">if</span> <span class="n">signum</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">stopQueue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;Stopping&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[42mWARNING: Receive the stop signal, the program will be stopped now!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s2">&quot;kill -9 </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span> <span class="p">)</span></div>
+
+<span class="c1">#def processAsyner( event, numbOfTopics, progressCounter, asynCounter, signalQueue ):</span>
+<div class="viewcode-block" id="processAsyner"><a class="viewcode-back" href="../runCtrl.html#runCtrl.processAsyner">[docs]</a><span class="k">def</span> <span class="nf">processAsyner</span><span class="p">(</span> <span class="n">numbOfTopics</span><span class="p">,</span> <span class="n">glbCtrlDict</span><span class="p">,</span> <span class="n">topicConfName</span><span class="p">,</span> <span class="n">consumerConfName</span> <span class="p">):</span>
+    <span class="n">setproctitle</span><span class="o">.</span><span class="n">setproctitle</span><span class="p">(</span> <span class="s2">&quot;KDP-Control-Process-&quot;</span><span class="o">+</span><span class="n">topicConfName</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">consumerConfName</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGQUIT</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span> <span class="n">sigint_handle</span><span class="p">,</span> <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;queue&#39;</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[44mINFO: The program can be killed by start new terminal and enter &#39;kill -3 </span><span class="si">%d</span><span class="s2">&#39;</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[44mINFO: The program can be killed by start new terminal and enter &#39;kill -3 </span><span class="si">%d</span><span class="s2">&#39;</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[44mINFO: The program can be killed by start new terminal and enter &#39;kill -3 </span><span class="si">%d</span><span class="s2">&#39;</span><span class="se">\033</span><span class="s2">[0m&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;asynCNT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">numbOfTopics</span> <span class="p">):</span>
+            <span class="k">if</span> <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;progressCNT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">numbOfTopics</span><span class="p">:</span>
+                <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;progressCNT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">glbCtrlDict</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;++++++++++++++++++++++++++ Release the counter ++++++++++++++++++++++++++&quot;</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">break</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Test</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, jiyizi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
