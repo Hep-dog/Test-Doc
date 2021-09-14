@@ -1,0 +1,222 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zk_cn">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>consumerFuncs module &#8212; Test 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-consumerFuncs">
+<span id="consumerfuncs-module"></span><h1>consumerFuncs module<a class="headerlink" href="#module-consumerFuncs" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="consumerFuncs.asynDataProcess">
+<code class="descclassname">consumerFuncs.</code><code class="descname">asynDataProcess</code><span class="sig-paren">(</span><em>eventLoop</em>, <em>executor</em>, <em>msg</em>, <em>eventCounter</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>dataPipeDict</em>, <em>userObject</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumerFuncs.html#asynDataProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.asynDataProcess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.checkCutoff">
+<code class="descclassname">consumerFuncs.</code><code class="descname">checkCutoff</code><span class="sig-paren">(</span><em>waterList</em>, <em>waterIDList</em>, <em>cutoffFlag</em>, <em>endPulseID</em><span class="sig-paren">)</span> &#x2192; List[List[int]]<a class="reference internal" href="_modules/consumerFuncs.html#checkCutoff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.checkCutoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to cut the messages to user specified pulse ID, if cutoffFlag is true
+waterList: the input signal messages list, which has be sorted in most cases.
+waterIDList: the input message IDs list, its length should be same as waterList.
+cutoffFlag : the control flag used to decide cut messages or not.
+endPulseID : user specified end of messages.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.createConsumers">
+<code class="descclassname">consumerFuncs.</code><code class="descname">createConsumers</code><span class="sig-paren">(</span><em>IP</em>, <em>nameTopic</em>, <em>Group_ID</em>, <em>numb</em>, <em>Consumers</em>, <em>consumerParasDict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/consumerFuncs.html#createConsumers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.createConsumers" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to create multi-consumers and return the consumers list, each one for one partition of a specified topic.</p>
+<p>IP: kafka broker address and port
+nameTopic: the Kafka topic name
+Group_ID : the name of consumer group
+timeout_ms: waiting time for each kafka consumer
+numb: the number of partitions of the topic
+Consumers: the list use to hold all consumers
+protLength: the protect length for message jumping
+jumpPulseID: is the targe position user wanting to jump for each partitions. It will consuming:</p>
+<p>define the expected jump offset:
+1) from the latest msg if jumpPulseID is '-1'
+2) from the beginning for '0' if jumpPulseID is 0
+3) from a specific position if expOffset is an integer larger than 0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.expOffsetFromID">
+<code class="descclassname">consumerFuncs.</code><code class="descname">expOffsetFromID</code><span class="sig-paren">(</span><em>consumer</em>, <em>partion</em>, <em>numb</em>, <em>protLength</em>, <em>jumpPulseID</em>, <em>absTimeStamp</em>, <em>absPulseID</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/consumerFuncs.html#expOffsetFromID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.expOffsetFromID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.fillPools">
+<code class="descclassname">consumerFuncs.</code><code class="descname">fillPools</code><span class="sig-paren">(</span><em>Pool_msg</em>, <em>Pool_ID</em>, <em>msg</em>, <em>Invalid_ID</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/consumerFuncs.html#fillPools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.fillPools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note: the messges are sorted by its key, whose value is same as the Pulse ID.
+So, the sorting procedure is independent on the flatbuffers encoding/decoding method.</p>
+<p>Pool_msg  :   global messages pool
+Pool_ID   :    global Pulse ID pool
+msg       :   zipped messages
+Invalid_ID: invalid pulse ID for the 'None' messages</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.filterWater">
+<code class="descclassname">consumerFuncs.</code><code class="descname">filterWater</code><span class="sig-paren">(</span><em>waterList</em>, <em>waterIDList</em>, <em>consumerParasDict</em><span class="sig-paren">)</span> &#x2192; List[List[int]]<a class="reference internal" href="_modules/consumerFuncs.html#filterWater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.filterWater" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to filter the messages from user specified Pulse ID. Normally,
+the first message ID will be not the target jumping pulse ID, so we need to use this function
+to filter our wanted messages.</p>
+<p>waterList: the target sorted messages list, which will be used in further by user.
+waterIDList: the IDs list of waterList, which is used for the messages filtering
+jumpPulseID: user specified jumping pulse ID
+sortFlag   : gate for sorting messages or not
+filterGate : 'True' or 'False', if the jumpPulseID larger than 0, this parameter should be 'True'
+poolSize   : the size of messages pool
+Invalid_ID : user specified key for the invalid messages, it must not be overlapped with physical message key</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.freeWater">
+<code class="descclassname">consumerFuncs.</code><code class="descname">freeWater</code><span class="sig-paren">(</span><em>Pool_msg</em>, <em>Pool_ID</em>, <em>sliceSize</em>, <em>Last_msg</em>, <em>Last_ID</em>, <em>sortFlag</em>, <em>filterGate</em><span class="sig-paren">)</span> &#x2192; List[List[int]]<a class="reference internal" href="_modules/consumerFuncs.html#freeWater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.freeWater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ths function is used to release messages and IDs from the pools when their are full.
+Pool_msg: the fulled messages pool
+Pool_ID : the filled IDs pool
+waterList: the target sorted messages list, which will be used in further by users
+waterIDList: the pulse ID of target sorted messages list, which will be used in further by users
+sliceSize: the length of front messages in the filled messages pool
+Last_msg: the left messages in the pool after the releasing of water from pool
+Last_ID : the left IDs in the pool after the releasing of water from pool
+sortFlag: the flag for message sorting or not
+filterGate: the gate for message filtering or not</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.getID">
+<code class="descclassname">consumerFuncs.</code><code class="descname">getID</code><span class="sig-paren">(</span><em>msg</em>, <em>Invalid_ID</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/consumerFuncs.html#getID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.getID" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to get the pulse ID of a message.
+The decoding method is automatically generated by flatbuffers serialization.</p>
+<p>Note: since we read messages from all partions, there will be a case that some partitions have messages and others are &quot;None&quot;.
+For this case, we set the invalid_ID for the pulse ID for the &quot;None&quot; messages. So the &quot;None&quot; messages will be in the end
+of the messages pool by sorting with the pulse ID, we just left the &quot;None&quot; messages in the pool and don't use them</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.getNumOfPartitions">
+<code class="descclassname">consumerFuncs.</code><code class="descname">getNumOfPartitions</code><span class="sig-paren">(</span><em>brokerIP</em>, <em>topicName</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/consumerFuncs.html#getNumOfPartitions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.getNumOfPartitions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.msgRun">
+<code class="descclassname">consumerFuncs.</code><code class="descname">msgRun</code><span class="sig-paren">(</span><em>coroutineFlag</em>, <em>eventLoop</em>, <em>executor</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>msg</em>, <em>batchModeFlag</em>, <em>runStep</em>, <em>glbCtrlDict</em>, <em>eventCounter</em>, <em>dataPipeDict</em>, <em>userObjectList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumerFuncs.html#msgRun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.msgRun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.releasePool">
+<code class="descclassname">consumerFuncs.</code><code class="descname">releasePool</code><span class="sig-paren">(</span><em>eventLoop</em>, <em>executor</em>, <em>detectorTypeCode</em>, <em>dataType</em>, <em>Last_msg</em>, <em>Last_ID</em>, <em>consumerParasDict</em>, <em>glbCtrlDict</em>, <em>eventCounter</em>, <em>dataPipeDict</em>, <em>userObjectList</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/consumerFuncs.html#releasePool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.releasePool" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to release the message pool after the final loop.
+Last_msg: list of the message after the final loop
+Last_ID : list of the message ID after the final loop, its size should be equal with the Last_msg
+filterGate : 'True' or 'False', if the jumpPulseID larger than 0, this parameter should be 'True'
+jumpPulseID: the pulse ID used to jump messages. The user's data processing will starting from this number
+cutoffFlag: the flag to control whether stop consuming messages tile endPulseID or not, 'True' or 'Flase'
+endPulseID: the user specified message consuimg end pulse ID</p>
+<p>Note: after the last message loop, the message pool will be not full, which means the size of Last_msg and Last_ID will smaller than the poolSize.
+And there are must be some &quot;None&quot; messages in the Pool_msg and invalid_ID in the Pool_ID, because the number of messages of each partition are not same.
+For this case, we use the addtional &quot;None&quot; messages to full the Pool_msg and Pool_ID, sort the messages and pull the valid ones.</p>
+<p>leftSize : size of left messages and ID in the pools after the final loop.
+blankSize: size of the vacancies of the pools, which is poolSize - leftSize
+mudSize  : size of the &quot;None&quot; messages in the Last_msg, and the size of invalid_ID in the Last_ID
+dataSize : size of target messages in the Last_msg pool</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.timeToID">
+<code class="descclassname">consumerFuncs.</code><code class="descname">timeToID</code><span class="sig-paren">(</span><em>standardTime</em>, <em>absTimeStamp</em>, <em>absPulseID</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/consumerFuncs.html#timeToID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.timeToID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="consumerFuncs.zipConsumers">
+<code class="descclassname">consumerFuncs.</code><code class="descname">zipConsumers</code><span class="sig-paren">(</span><em>consumerList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/consumerFuncs.html#zipConsumers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#consumerFuncs.zipConsumers" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to zip the consumers list. So that user don't need to
+specify the number of messages and consumers in the data reading procedure now!</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Test</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, jiyizi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/consumerFuncs.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
